@@ -117,12 +117,17 @@ func createSpreadsheet(image string) *excelize.File {
 	return f
 }
 
-func saveFile(f *excelize.File, image string) {
+func saveFile(f *excelize.File, image string) string {
 	// Save xlsx file by the given path.
+	var response string
 	err := f.SaveAs("reports/" + image + ".xlsx")
 	if err != nil {
 		fmt.Println(err)
+		response = "failed to save file"
+	} else {
+		response = "successfully saved file"
 	}
+	return response
 }
 
 func writeRisk(f *excelize.File, ir ImageRisk) {
