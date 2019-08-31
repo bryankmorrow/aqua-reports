@@ -17,7 +17,7 @@ func main() {
 	// report for singular report by registry, image name and tag
 	r.HandleFunc("/report/{registry}/{image}/{tag}", getImage).Methods("GET")
 	// report for every listed images in one report
-	// r.HandleFunc("/reports/{images}", getImages).Methods("GET")
+	r.HandleFunc("/reports/images", getImagesFromPost).Methods("POST")
 
 	http.ListenAndServe(":8000", r)
 	log.Println("Listening on :8000")

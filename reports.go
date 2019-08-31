@@ -80,8 +80,6 @@ func getImage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-	log.Printf("EncodedRegistry: %s  EncodedImage: %s  EncodedTag: %s", encodedRegistry, encodedImage, encodedTag)
-	log.Printf("Registry: %s  Image: %s  Tag: %s", registry, image, tag)
 
 	var response = ImageResponse{image, tag, registry}
 	responseList = append(responseList, response)
@@ -107,9 +105,26 @@ func writeReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, mal
 	saveFile(f, fileName+"-"+tag)
 }
 
-/*
-func getImages(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	p := params["images"]
+func getImagesFromPost(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var csp Aqua
+	csp.url = os.Getenv("AQUA_URL")
+	csp.user = os.Getenv("AQUA_USER")
+	csp.password = os.Getenv("AQUA_PASSWORD")
+	csp.token = connectCSP()
+
+	log.Println("/reports/images post route called")
+
+	var images []ImageResponse
+	_ = json.NewDecoder(r.Body).Decode(&images)
+	for _, image := range images {
+		ir := imageRisk(csp, image.Registry, image.Name, image.Tag)
+		vuln := imageVulnerabilities(csp, image.Registry, image.Name, image.Tag)
+		sens := imageSensitive(csp, image.Registry, image.Name, image.Tag)
+		malw := imageMalware(csp, image.Registry, image.Name, image.Tag)
+
+		writeReport(image.Name, image.Tag, ir, vuln, malw, sens)
+	}
+	json.NewEncoder(w).Encode(&images)
 }
-*/

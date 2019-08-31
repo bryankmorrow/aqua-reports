@@ -2,3 +2,4 @@
 Dockerfile
 aqua-reports
 *.yaml
+*.xlsx
