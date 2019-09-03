@@ -3,11 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	// check for fatal, panic if true
+	fatal := checkEnv()
+	if fatal {
+		log.Fatalln("Environment variables not set, stopping aqua-reports")
+	}
 
 	// Create Router
 	r := mux.NewRouter().UseEncodedPath()
@@ -21,4 +27,25 @@ func main() {
 
 	http.ListenAndServe(":8000", r)
 	log.Println("Listening on :8000")
+}
+
+func checkEnv() bool {
+	fatal := false
+	// Get Environment Parameters and check for values
+	url := os.Getenv("AQUA_URL")
+	if url == "" {
+		log.Println("Please set the AQUA_URL environment variable")
+		fatal = true
+	}
+	user := os.Getenv("AQUA_USER")
+	if user == "" {
+		log.Println("Please set the AQUA_USER environment variable")
+		fatal = true
+	}
+	password := os.Getenv("AQUA_PASSWORD")
+	if password == "" {
+		log.Println("Please set the AQUA_PASSWORD environment variable")
+		fatal = true
+	}
+	return fatal
 }
