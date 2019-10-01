@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -48,7 +49,7 @@ func getAllImages(w http.ResponseWriter, r *http.Request) {
 			sens := imageSensitive(csp, v.Registry, v.Repository, v.Tag)
 			malw := imageMalware(csp, v.Registry, v.Repository, v.Tag)
 
-			resp := writeReport(v.Repository, v.Tag, ir, vuln, malw, sens)
+			resp := writeSpreadsheetReport(v.Repository, v.Tag, ir, vuln, malw, sens)
 
 			var response = ImageResponse{v.Repository, v.Tag, v.Registry, resp}
 			responseList = append(responseList, response)
@@ -96,17 +97,16 @@ func getImage(w http.ResponseWriter, r *http.Request) {
 	vuln := imageVulnerabilities(csp, registry, image, tag)
 	sens := imageSensitive(csp, registry, image, tag)
 	malw := imageMalware(csp, registry, image, tag)
-
-	resp := writeReport(image, tag, ir, vuln, malw, sens)
-
-	var response = ImageResponse{image, tag, registry, resp}
+	spreadsheetResp := writeSpreadsheetReport(image, tag, ir, vuln, malw, sens)
+	htmlResp := writeHTMLReport(image, tag, ir, vuln, malw, sens)
+	log.Println(htmlResp)
+	var response = ImageResponse{image, tag, registry, spreadsheetResp}
 	responseList = append(responseList, response)
 
-	log.Println(response)
 	json.NewEncoder(w).Encode(responseList)
 }
 
-func writeReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, malw Malware, sens Sensitive) string {
+func writeSpreadsheetReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, malw Malware, sens Sensitive) string {
 	fileName := strings.Replace(image, "/", "_", -1)
 	f := createSpreadsheet(fileName + "-" + tag)
 	writeRisk(f, ir)
@@ -115,6 +115,28 @@ func writeReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, mal
 	writeSensitive(f, sens)
 	response := saveFile(f, fileName+"-"+tag)
 	return response
+}
+
+func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, malw Malware, sens Sensitive) string {
+	path := createHTMLFile(image, tag, ir.Registry)
+	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	writer := bufio.NewWriter(w)
+	// Start writing the raw HTML file
+	writeHTMLOne(image, tag, ir.Registry, "assets/1.inc", writer, w)
+	writeHTMLRisk(image, tag, ir, writer, w)
+	writeHTMLOne(image, tag, ir.Registry, "assets/2.inc", writer, w)
+	writeHTMLVulnerability(vuln, writer, w)
+	writeHTMLOne(image, tag, ir.Registry, "assets/3.inc", writer, w)
+	writeHTMLSensitive(sens, writer, w)
+	writeHTMLOne(image, tag, ir.Registry, "assets/4.inc", writer, w)
+	writeHTMLMalware(malw, writer, w)
+	writeHTMLOne(image, tag, ir.Registry, "assets/5.inc", writer, w)
+	w.Close()
+	log.Printf("Report for image: %s created successfully \n", image+":"+tag)
+	return "HTML report created successfully"
 }
 
 func getImagesFromPost(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +160,7 @@ func getImagesFromPost(w http.ResponseWriter, r *http.Request) {
 		sens := imageSensitive(csp, image.Registry, image.Name, image.Tag)
 		malw := imageMalware(csp, image.Registry, image.Name, image.Tag)
 
-		resp := writeReport(image.Name, image.Tag, ir, vuln, malw, sens)
+		resp := writeSpreadsheetReport(image.Name, image.Tag, ir, vuln, malw, sens)
 		var response = ImageResponse{image.Name, image.Tag, image.Registry, resp}
 		responseList = append(responseList, response)
 		i++

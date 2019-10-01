@@ -3,3 +3,5 @@ Dockerfile
 aqua-reports
 *.yaml
 *.xlsx
+.vscode/launch.json
+reports/

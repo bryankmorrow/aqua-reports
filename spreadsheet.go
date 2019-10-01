@@ -71,7 +71,7 @@ func createSpreadsheet(image string) *excelize.File {
 	f.SetCellValue("Risk", "A1", "Image")
 	f.SetCellValue("Risk", "B1", "Tag")
 	f.SetCellValue("Risk", "C1", "Registry")
-	f.SetCellValue("Risk", "D1", "Compliant")
+	f.SetCellValue("Risk", "D1", "Non-Compliant")
 	f.SetCellValue("Risk", "E1", "Scan Date")
 	f.SetCellValue("Risk", "F1", "Total Vulns")
 	f.SetCellValue("Risk", "G1", "High Vulns")

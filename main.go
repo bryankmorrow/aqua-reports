@@ -25,8 +25,8 @@ func main() {
 	// report for every listed images in one report
 	r.HandleFunc("/reports/images", getImagesFromPost).Methods("POST")
 
-	http.ListenAndServe(":8000", r)
-	log.Println("Listening on :8000")
+	http.ListenAndServe(":8001", r)
+	log.Println("Listening on :8001")
 }
 
 func checkEnv() bool {
