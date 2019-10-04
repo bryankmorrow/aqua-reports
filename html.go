@@ -201,9 +201,9 @@ func writeHTMLVulnerability(vulns ImageVulnerabilities, writer *bufio.Writer, w 
 	writer.WriteString(str)
 	for _, vuln := range vulns.Result {
 		str := fmt.Sprintf(`<tr><td><a href="%s" target="_blank">%s</a></td>
-							   <td>musl</td><td><span class="severity %s">%s</span></td>
+							   <td>%s</td><td><span class="severity %s">%s</span></td>
 							   <td><span>%f</span></td>
-							   <td>%s</td></tr>`, vuln.VendorURL, vuln.Name, strings.ToLower(vuln.AquaSeverity), strings.ToLower(vuln.AquaSeverity), vuln.AquaScore, vuln.FixVersion)
+							   <td>%s</td></tr>`, vuln.VendorURL, vuln.Name, vuln.Resource, strings.ToLower(vuln.AquaSeverity), strings.ToLower(vuln.AquaSeverity), vuln.AquaScore, vuln.FixVersion)
 		writer.WriteString(str)
 	}
 	writer.Flush()
@@ -279,46 +279,3 @@ func getResourceFromVuln(vulns ImageVulnerabilities) map[string]ResourceReport {
 	}
 	return m
 }
-
-/*
-func writeHTMLRisk(image, tag string, ir ImageRisk, writer *bufio.Writer, w *os.File) {
-	if ir.Disallowed {
-		str := fmt.Sprintf("<tr id=\"non-compliant\"><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%t</td><td>%t</td><td>%s</td></tr>", ir.VulnsFound, ir.HighVulns, ir.MedVulns, ir.LowVulns, ir.NegVulns, ir.Malware, ir.SensitiveData, ir.Whitelisted, ir.Blacklisted, ir.ScanDate.String())
-		writer.WriteString(str)
-	} else {
-		str := fmt.Sprintf("<tr id=\"compliant\"><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%t</td><td>%t</td><td>%s</td></tr>", ir.VulnsFound, ir.HighVulns, ir.MedVulns, ir.LowVulns, ir.NegVulns, ir.Malware, ir.SensitiveData, ir.Whitelisted, ir.Blacklisted, ir.ScanDate.String())
-		writer.WriteString(str)
-	}
-
-	writer.Flush()
-}
-
-func writeHTMLVulnerability(vuln ImageVulnerabilities, writer *bufio.Writer, w *os.File) {
-
-	for _, v := range vuln.Result {
-		if v.Resource.Type == "package" {
-			str := fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%f</td><td>%s</td><td>%s</td><td>%s</td></tr>", v.Name, v.Resource.Type+"-"+v.Resource.Name, v.FixVersion, v.AquaScore, v.AquaSeverity, v.PublishDate, v.ModificationDate)
-			writer.WriteString(str)
-		} else {
-			str := fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%f</td><td>%s</td><td>%s</td><td>%s</td></tr>", v.Name, v.Resource.Type+"-"+v.Resource.Path, v.FixVersion, v.AquaScore, v.AquaSeverity, v.PublishDate, v.ModificationDate)
-			writer.WriteString(str)
-		}
-	}
-	writer.Flush()
-}
-
-func writeHTMLSensitive(sens Sensitive, writer *bufio.Writer, w *os.File) {
-	for _, v := range sens.Result {
-		str := fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", v.Type, v.Filename, v.Path, v.Hash)
-		writer.WriteString(str)
-	}
-	writer.Flush()
-}
-
-func writeHTMLMalware(malw Malware, writer *bufio.Writer, w *os.File) {
-	for _, v := range malw.Result {
-		str := fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", v.Malware, v.Hash, v.Path, v.Paths)
-		writer.WriteString(str)
-	}
-	writer.Flush()
-} */

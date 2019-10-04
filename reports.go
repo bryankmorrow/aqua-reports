@@ -48,9 +48,8 @@ func getAllImages(w http.ResponseWriter, r *http.Request) {
 			vuln := imageVulnerabilities(csp, v.Registry, v.Repository, v.Tag)
 			sens := imageSensitive(csp, v.Registry, v.Repository, v.Tag)
 			malw := imageMalware(csp, v.Registry, v.Repository, v.Tag)
-
 			resp := writeSpreadsheetReport(v.Repository, v.Tag, ir, vuln, malw, sens)
-
+			writeHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
 			var response = ImageResponse{v.Repository, v.Tag, v.Registry, resp}
 			responseList = append(responseList, response)
 			i++
@@ -97,9 +96,11 @@ func getImage(w http.ResponseWriter, r *http.Request) {
 	vuln := imageVulnerabilities(csp, registry, image, tag)
 	sens := imageSensitive(csp, registry, image, tag)
 	malw := imageMalware(csp, registry, image, tag)
+	// Write Spreadsheet
 	spreadsheetResp := writeSpreadsheetReport(image, tag, ir, vuln, malw, sens)
-	htmlResp := writeHTMLReport(image, tag, ir, vuln, malw, sens)
-	log.Println(htmlResp)
+	// Write HTML
+	writeHTMLReport(image, tag, ir, vuln, malw, sens)
+
 	var response = ImageResponse{image, tag, registry, spreadsheetResp}
 	responseList = append(responseList, response)
 
@@ -117,23 +118,14 @@ func writeSpreadsheetReport(image, tag string, ir ImageRisk, vuln ImageVulnerabi
 	return response
 }
 
-func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, malw Malware, sens Sensitive) string {
+func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities, malw Malware, sens Sensitive) {
 	path := createHTMLFile(image, tag, ir.Registry)
 	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	writer := bufio.NewWriter(w)
-	// Start writing the raw HTML file
-	/* writeHTMLOne(image, tag, ir.Registry, "assets/1.inc", writer, w)
-	writeHTMLRisk(image, tag, ir, writer, w)
-	writeHTMLOne(image, tag, ir.Registry, "assets/2.inc", writer, w)
-	writeHTMLVulnerability(vuln, writer, w)
-	writeHTMLOne(image, tag, ir.Registry, "assets/3.inc", writer, w)
-	writeHTMLSensitive(sens, writer, w)
-	writeHTMLOne(image, tag, ir.Registry, "assets/4.inc", writer, w)
-	writeHTMLMalware(malw, writer, w)
-	writeHTMLOne(image, tag, ir.Registry, "assets/5.inc", writer, w) */
+
 	writeHTMLRiskv2("assets/risk1.inc", ir, writer, w)
 	//Compliance SVG Check
 	if ir.Disallowed {
@@ -158,8 +150,8 @@ func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities,
 	writeHTMLMalware(malw, writer, w)
 	writeHTMLRiskv2("assets/risk6.inc", ir, writer, w)
 	w.Close()
+
 	log.Printf("Report for image: %s created successfully \n", image+":"+tag)
-	return "HTML report created successfully"
 }
 
 func getImagesFromPost(w http.ResponseWriter, r *http.Request) {
