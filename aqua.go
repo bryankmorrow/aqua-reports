@@ -178,7 +178,7 @@ type ImageRisk struct {
 			Failed               bool     `json:"failed"`
 			Blocking             bool     `json:"blocking"`
 			Control              string   `json:"control"`
-			SensitiveDataFound   bool     `json:"sensitive_data_found,omitempty"`
+			SensitiveDataFound   int32    `json:"sensitive_data_found,omitempty"`
 			MalwareFound         bool     `json:"malware_found,omitempty"`
 			BlacklistedCvesFound []string `json:"blacklisted_cves_found,omitempty"`
 			CustomChecksFailed   []struct {
@@ -343,7 +343,7 @@ func imageRisk(csp Aqua, registry, repo, tag string) ImageRisk {
 	if events.StatusCode == 200 {
 		err := json.Unmarshal([]byte(body), &ir)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("func imageRisk: " + err.Error())
 			//json: Unmarshal(non-pointer main.Request)
 		}
 	}
@@ -362,7 +362,7 @@ func imageVulnerabilities(csp Aqua, registry, repo, tag string) ImageVulnerabili
 	if events.StatusCode == 200 {
 		err := json.Unmarshal([]byte(body), &vuln)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("func imageVulnerabilities:" + err.Error())
 			//json: Unmarshal(non-pointer main.Request)
 		}
 	}
@@ -381,7 +381,7 @@ func imageSensitive(csp Aqua, registry, repo, tag string) Sensitive {
 	if events.StatusCode == 200 {
 		err := json.Unmarshal([]byte(body), &sensitive)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("func imageSensitive: " + err.Error())
 			//json: Unmarshal(non-pointer main.Request)
 		}
 	}
@@ -400,7 +400,7 @@ func imageMalware(csp Aqua, registry, repo, tag string) Malware {
 	if events.StatusCode == 200 {
 		err := json.Unmarshal([]byte(body), &malware)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println("func imageMalware: " + err.Error())
 			//json: Unmarshal(non-pointer main.Request)
 		}
 	}

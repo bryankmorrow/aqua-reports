@@ -174,7 +174,7 @@ func getImagesFromPost(w http.ResponseWriter, r *http.Request) {
 		vuln := imageVulnerabilities(csp, image.Registry, image.Name, image.Tag)
 		sens := imageSensitive(csp, image.Registry, image.Name, image.Tag)
 		malw := imageMalware(csp, image.Registry, image.Name, image.Tag)
-
+		writeHTMLReport(image.Name, image.Tag, ir, vuln, malw, sens)
 		resp := writeSpreadsheetReport(image.Name, image.Tag, ir, vuln, malw, sens)
 		var response = ImageResponse{image.Name, image.Tag, image.Registry, resp}
 		responseList = append(responseList, response)
