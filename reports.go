@@ -125,7 +125,7 @@ func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities,
 	}
 	writer := bufio.NewWriter(w)
 	// Start writing the raw HTML file
-	writeHTMLOne(image, tag, ir.Registry, "assets/1.inc", writer, w)
+	/* writeHTMLOne(image, tag, ir.Registry, "assets/1.inc", writer, w)
 	writeHTMLRisk(image, tag, ir, writer, w)
 	writeHTMLOne(image, tag, ir.Registry, "assets/2.inc", writer, w)
 	writeHTMLVulnerability(vuln, writer, w)
@@ -133,7 +133,30 @@ func writeHTMLReport(image, tag string, ir ImageRisk, vuln ImageVulnerabilities,
 	writeHTMLSensitive(sens, writer, w)
 	writeHTMLOne(image, tag, ir.Registry, "assets/4.inc", writer, w)
 	writeHTMLMalware(malw, writer, w)
-	writeHTMLOne(image, tag, ir.Registry, "assets/5.inc", writer, w)
+	writeHTMLOne(image, tag, ir.Registry, "assets/5.inc", writer, w) */
+	writeHTMLRiskv2("assets/risk1.inc", ir, writer, w)
+	//Compliance SVG Check
+	if ir.Disallowed {
+		str := getSvgNonCompliant(ir)
+		writer.WriteString(str)
+	} else {
+		str := getSvgCompliant(ir)
+		writer.WriteString(str)
+	}
+	writeHTMLRiskv2("assets/risk2.inc", ir, writer, w)
+	// Image Assurance if Non-Compliant
+	if ir.Disallowed {
+		writeHTMLRiskNonCompliant(ir, writer, w)
+	}
+	writeHTMLRiskv2("assets/risk3.inc", ir, writer, w)
+	m := getResourceFromVuln(vuln)
+	writeHTMLResource(m, writer, w)
+	writeHTMLVulnerability(vuln, writer, w)
+	writeHTMLRiskv2("assets/risk4.inc", ir, writer, w)
+	writeHTMLSensitive(sens, writer, w)
+	writeHTMLRiskv2("assets/risk5.inc", ir, writer, w)
+	writeHTMLMalware(malw, writer, w)
+	writeHTMLRiskv2("assets/risk6.inc", ir, writer, w)
 	w.Close()
 	log.Printf("Report for image: %s created successfully \n", image+":"+tag)
 	return "HTML report created successfully"
