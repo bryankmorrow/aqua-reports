@@ -84,13 +84,21 @@ func getSvgNonCompliant(ir ImageRisk) string {
 	return str
 }
 
-func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
+func writeHTMLRiskNonCompliantv2(ir ImageRisk, writer *bufio.Writer, w *os.File) {
 	str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
 		<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
 		</svg>`)
 	writer.WriteString(str)
+
+}
+
+func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
 	for _, fail := range ir.AssuranceResults.ChecksPerformed {
 		if (fail.Failed) && (fail.Control == "cve_blacklist") {
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
 			str = fmt.Sprintf("Image contains blacklisted vulnerabilities: ")
 			for i, v := range fail.BlacklistedCvesFound {
 				if i == 0 {
@@ -99,12 +107,36 @@ func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
 					str = str + fmt.Sprintf(", <strong>%s</strong>", v)
 				}
 			}
-			writer.WriteString(str)
+			writer.WriteString(str + "</li>")
 		} else if (fail.Failed) && (fail.Control == "sensitive_data") {
-			writer.WriteString("Remove Sensitive Data from Image")
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
+			writer.WriteString("Remove Sensitive Data from Image</li>")
 		} else if (fail.Failed) && (fail.Control == "malware") {
-			writer.WriteString("Remove Malware from Image")
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
+			writer.WriteString("Remove Malware from Image</li>")
+		} else if (fail.Failed) && (fail.Control == "max_severity") {
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
+			writer.WriteString(fmt.Sprintf("Image severity <strong>%s</strong> exceeds the allowed max severity <strong>%s</strong></li>", fail.MaxSeverityFound, fail.MaxSeverityAllowed))
+		} else if (fail.Failed) && (fail.Control == "root_user") {
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
+			writer.WriteString("Create a non-root user for the image</li>")
 		} else if (fail.Failed) && (fail.Control == "custom_checks") {
+			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
+				<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
+				</svg>`)
+			writer.WriteString(str)
 			str = fmt.Sprintf("Some custom checks failed: ")
 			for i, v := range fail.CustomChecksFailed {
 				if i == 0 {
@@ -113,7 +145,7 @@ func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
 					str = str + fmt.Sprintf(", <strong>%s</strong>", v.ScriptName)
 				}
 			}
-			writer.WriteString(str)
+			writer.WriteString(str + "</li>")
 		}
 	}
 	writer.Flush()

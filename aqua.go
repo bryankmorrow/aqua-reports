@@ -179,7 +179,10 @@ type ImageRisk struct {
 			Blocking             bool     `json:"blocking"`
 			Control              string   `json:"control"`
 			SensitiveDataFound   int32    `json:"sensitive_data_found,omitempty"`
+			MaxSeverityAllowed   string   `json:"max_severity_allowed,omitempty"`
+			MaxSeverityFound     string   `json:"max_severity_found,omitempty"`
 			MalwareFound         bool     `json:"malware_found,omitempty"`
+			RootUserFound        bool     `json:"root_user_found,omitempty"`
 			BlacklistedCvesFound []string `json:"blacklisted_cves_found,omitempty"`
 			CustomChecksFailed   []struct {
 				ScriptName string `json:"script_name"`
