@@ -1,4 +1,4 @@
-package main
+package aqua
 
 import (
 	"encoding/json"
@@ -10,42 +10,15 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
-// Aqua Settings Structure
-type Aqua struct {
+// CSP Settings Structure
+type CSP struct {
 	url      string
 	user     string
 	password string
 	token    string
 }
 
-//Connect to Aqua and return a JWT bearerToken (string)
-func connectCSP() string {
-	// Get Environment Parameters
-	var csp Aqua
-	csp.url = os.Getenv("AQUA_URL")
-	csp.user = os.Getenv("AQUA_USER")
-	csp.password = os.Getenv("AQUA_PASSWORD")
-
-	var bearerToken string
-	request := gorequest.New()
-	resp, body, errs := request.Post(csp.url + "/api/v1/login").Send(`{"id":"` + csp.user + `", "password":"` + csp.password + `"}`).End()
-
-	if errs != nil {
-		log.Printf("Failed connecting to Aqua CSP: %s \n  Status Code: %d", csp.url, resp.StatusCode)
-	}
-
-	if resp.StatusCode == 200 {
-		var raw map[string]interface{}
-		json.Unmarshal([]byte(body), &raw)
-		bearerToken = raw["token"].(string)
-	}
-	//log.Println(bearerToken)
-	return bearerToken
-}
-
-// IMAGES
-
-// AllImages comes from allImages data return
+// AllImages struct comes from allImages data return
 type AllImages struct {
 	Count    int `json:"count"`
 	Page     int `json:"page"`
@@ -297,9 +270,119 @@ type Sensitive struct {
 	} `json:"result"`
 }
 
-//Get all Images (Images Tab in Aqua UI)
-//GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
-func allImages(csp Aqua) []ImageList {
+// ExecutiveOverview struct
+type ExecutiveOverview struct {
+	Filter struct {
+		Application string `json:"application"`
+		Registry    string `json:"registry"`
+		Hosts       string `json:"hosts"`
+	} `json:"filter"`
+	RunningContainers struct {
+		Total        int `json:"total"`
+		High         int `json:"high"`
+		Medium       int `json:"medium"`
+		Low          int `json:"low"`
+		Ok           int `json:"ok"`
+		Unregistered int `json:"unregistered"`
+	} `json:"running_containers"`
+	RegistryCounts struct {
+		Images struct {
+			Total  int `json:"total"`
+			High   int `json:"high"`
+			Medium int `json:"medium"`
+			Low    int `json:"low"`
+			Ok     int `json:"ok"`
+		} `json:"images"`
+		ImagesTrends    interface{} `json:"images_trends"`
+		Vulnerabilities struct {
+			Total  int `json:"total"`
+			High   int `json:"high"`
+			Medium int `json:"medium"`
+			Low    int `json:"low"`
+			Ok     int `json:"ok"`
+		} `json:"vulnerabilities"`
+		CvesTrends interface{} `json:"cves_trends"`
+	} `json:"registry_counts"`
+	Hosts struct {
+		Total             int         `json:"total"`
+		DisconnectedCount int         `json:"disconnected_count"`
+		Hosts             interface{} `json:"hosts"`
+	} `json:"hosts"`
+	Alerts []struct {
+		ID           int    `json:"id"`
+		Time         int    `json:"time"`
+		Type         string `json:"type"`
+		User         string `json:"user"`
+		Image        string `json:"image"`
+		Imagehash    string `json:"imagehash"`
+		Container    string `json:"container"`
+		Containerid  string `json:"containerid"`
+		Host         string `json:"host"`
+		Hostid       string `json:"hostid"`
+		Category     string `json:"category"`
+		Result       int    `json:"result"`
+		UserResponse string `json:"user_response"`
+		Data         string `json:"data"`
+	} `json:"alerts"`
+	AuditTickers []struct {
+		ID          int    `json:"id"`
+		Time        int    `json:"time"`
+		Type        string `json:"type"`
+		User        string `json:"user"`
+		Action      string `json:"action"`
+		Image       string `json:"image"`
+		Imagehash   string `json:"imagehash"`
+		Container   string `json:"container"`
+		Containerid string `json:"containerid"`
+		Host        string `json:"host"`
+		Hostid      string `json:"hostid"`
+		Category    string `json:"category"`
+		Result      int    `json:"result"`
+		Data        string `json:"data"`
+	} `json:"audit_tickers"`
+}
+
+// Enforcers struct
+type Enforcers struct {
+	Total             int `json:"total"`
+	DisconnectedCount int `json:"disconnected_count"`
+	Hosts             []struct {
+		ID                string `json:"id"`
+		Name              string `json:"name"`
+		Status            string `json:"status"`
+		Enforce           bool   `json:"enforce"`
+		RunningContainers int    `json:"running_containers"`
+	} `json:"hosts"`
+}
+
+// NewCSP - initialize the CSP
+func NewCSP() CSP {
+	return CSP{}
+}
+
+// ConnectCSP - Connect to Aqua and return a JWT bearerToken (string)
+func (csp *CSP) ConnectCSP() {
+	// Get Environment Parameters
+	csp.url = os.Getenv("AQUA_URL")
+	csp.user = os.Getenv("AQUA_USER")
+	csp.password = os.Getenv("AQUA_PASSWORD")
+
+	request := gorequest.New()
+	resp, body, errs := request.Post(csp.url + "/api/v1/login").Send(`{"id":"` + csp.user + `", "password":"` + csp.password + `"}`).End()
+
+	if errs != nil {
+		log.Printf("Failed connecting to Aqua CSP: %s \n  Status Code: %d", csp.url, resp.StatusCode)
+	}
+
+	if resp.StatusCode == 200 {
+		var raw map[string]interface{}
+		json.Unmarshal([]byte(body), &raw)
+		csp.token = raw["token"].(string)
+	}
+}
+
+// GetAllImages - GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
+func (csp *CSP) GetAllImages() []ImageList {
 	var data = AllImages{}
 	var imageList = []ImageList{}
 	request := gorequest.New()
@@ -334,7 +417,8 @@ func allImages(csp Aqua) []ImageList {
 	return imageList
 }
 
-func imageRisk(csp Aqua, registry, repo, tag string) ImageRisk {
+// GetImageRisk - GET the risk API
+func (csp *CSP) GetImageRisk(registry, repo, tag string) ImageRisk {
 	var ir = ImageRisk{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
@@ -353,7 +437,8 @@ func imageRisk(csp Aqua, registry, repo, tag string) ImageRisk {
 	return ir
 }
 
-func imageVulnerabilities(csp Aqua, registry, repo, tag string) ImageVulnerabilities {
+// GetImageVulnerabilities - GET the vulnerabilities API
+func (csp *CSP) GetImageVulnerabilities(registry, repo, tag string) ImageVulnerabilities {
 	var vuln = ImageVulnerabilities{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
@@ -372,7 +457,8 @@ func imageVulnerabilities(csp Aqua, registry, repo, tag string) ImageVulnerabili
 	return vuln
 }
 
-func imageSensitive(csp Aqua, registry, repo, tag string) Sensitive {
+// GetImageSensitive - GET the sensitive API for an image
+func (csp *CSP) GetImageSensitive(registry, repo, tag string) Sensitive {
 	var sensitive = Sensitive{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
@@ -391,7 +477,8 @@ func imageSensitive(csp Aqua, registry, repo, tag string) Sensitive {
 	return sensitive
 }
 
-func imageMalware(csp Aqua, registry, repo, tag string) Malware {
+// GetImageMalware - GET the malware API for an image
+func (csp *CSP) GetImageMalware(registry, repo, tag string) Malware {
 	var malware = Malware{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
