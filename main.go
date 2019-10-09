@@ -15,7 +15,8 @@ func main() {
 	}
 
 	s := app.NewServer()
-	s.Init("8002")
+	port := os.Getenv("AQUA_REPORTS_PORT")
+	s.Init(port)
 	s.Start()
 }
 
@@ -35,6 +36,11 @@ func checkEnv() bool {
 	password := os.Getenv("AQUA_PASSWORD")
 	if password == "" {
 		log.Println("Please set the AQUA_PASSWORD environment variable")
+		fatal = true
+	}
+	port := os.Getenv("AQUA_REPORTS_PORT")
+	if port == "" {
+		log.Println("Please set the AQUA_REPORTS_PORT environment variable")
 		fatal = true
 	}
 	return fatal
