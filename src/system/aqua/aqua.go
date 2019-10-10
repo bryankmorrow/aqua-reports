@@ -384,11 +384,11 @@ func (csp *CSP) ConnectCSP() {
 
 // GetAllImages - GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
 func (csp *CSP) GetAllImages() []ImageList {
-	defer track(runningTime("GetAllImages"))
 	var data = AllImages{}
 	var imageList = []ImageList{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
+	log.Println("Using the new Query method")
 	events, body, errs := request.Clone().Query(`{filter: '', include_totals: 'true', order_by: 'name'}`).Get(csp.url + "/api/v2/repositories").End()
 	if errs != nil {
 		log.Println(events.StatusCode)
@@ -424,8 +424,7 @@ func (csp *CSP) GetImageRisk(registry, repo, tag string) ImageRisk {
 	var ir = ImageRisk{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
-	events, body, errs := request.Clone().Get(csp.url + "/api/v2/images/" + registry + "/" +
-		repo + "/" + tag).End()
+	events, body, errs := request.Clone().Get(csp.url + "/api/v2/images/" + registry + "/" + repo + "/" + tag).End()
 	if errs != nil {
 		log.Println(events.StatusCode)
 	}
@@ -444,8 +443,7 @@ func (csp *CSP) GetImageVulnerabilities(registry, repo, tag string) ImageVulnera
 	var vuln = ImageVulnerabilities{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
-	events, body, errs := request.Clone().Get(csp.url + "/api/v2/images/" + registry + "/" +
-		repo + "/" + tag + "/vulnerabilities?show_negligible=true&pagesize=1000").End()
+	events, body, errs := request.Clone().Get(csp.url + "/api/v2/images/" + registry + "/" + repo + "/" + tag + "/vulnerabilities?show_negligible=true&pagesize=1000").End()
 	if errs != nil {
 		log.Println(events.StatusCode)
 	}
@@ -497,14 +495,4 @@ func (csp *CSP) GetImageMalware(registry, repo, tag string) Malware {
 		}
 	}
 	return malware
-}
-
-func runningTime(s string) (string, time.Time) {
-	log.Println("Start:	", s)
-	return s, time.Now()
-}
-
-func track(s string, startTime time.Time) {
-	endTime := time.Now()
-	log.Println("End:	", s, "took", endTime.Sub(startTime))
 }
