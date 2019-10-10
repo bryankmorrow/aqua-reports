@@ -2,6 +2,7 @@ package aqua
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -154,7 +155,7 @@ type ImageRisk struct {
 			SensitiveDataFound   int32    `json:"sensitive_data_found,omitempty"`
 			MaxSeverityAllowed   string   `json:"max_severity_allowed,omitempty"`
 			MaxSeverityFound     string   `json:"max_severity_found,omitempty"`
-			MalwareFound         bool     `json:"malware_found,omitempty"`
+			MalwareFound         int64    `json:"malware_found,omitempty"`
 			RootUserFound        bool     `json:"root_user_found,omitempty"`
 			BlacklistedCvesFound []string `json:"blacklisted_cves_found,omitempty"`
 			CustomChecksFailed   []struct {
@@ -383,11 +384,12 @@ func (csp *CSP) ConnectCSP() {
 
 // GetAllImages - GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
 func (csp *CSP) GetAllImages() []ImageList {
+	defer track(runningTime("GetAllImages"))
 	var data = AllImages{}
 	var imageList = []ImageList{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
-	events, body, errs := request.Clone().Get(csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name").End()
+	events, body, errs := request.Clone().Query(`{filter: '', include_totals: 'true', order_by: 'name'}`).Get(csp.url + "/api/v2/repositories").End()
 	if errs != nil {
 		log.Println(events.StatusCode)
 	}
@@ -399,8 +401,8 @@ func (csp *CSP) GetAllImages() []ImageList {
 		}
 		for _, result := range data.Result {
 			var list = ImageList{}
-			events, body, errs = request.Clone().Get(csp.url + "/api/v2/images?name=" + result.Name + "&page_size=" +
-				strconv.Itoa(result.NumImages)).End()
+			query := fmt.Sprintf("{name: \"%s\", page_size: %s}", result.Name, strconv.Itoa(result.NumImages))
+			events, body, errs = request.Clone().Query(query).Get(csp.url + "/api/v2/images").End()
 			if errs != nil {
 				log.Println(events.StatusCode)
 			}
@@ -495,4 +497,14 @@ func (csp *CSP) GetImageMalware(registry, repo, tag string) Malware {
 		}
 	}
 	return malware
+}
+
+func runningTime(s string) (string, time.Time) {
+	log.Println("Start:	", s)
+	return s, time.Now()
+}
+
+func track(s string, startTime time.Time) {
+	endTime := time.Now()
+	log.Println("End:	", s, "took", endTime.Sub(startTime))
 }

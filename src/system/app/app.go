@@ -47,8 +47,8 @@ func (s *Server) Start() {
 	newServer := &http.Server{
 		Handler:      handler,
 		Addr:         "0.0.0.0" + s.port,
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  30 * time.Second,
 	}
 
 	log.Fatal(newServer.ListenAndServe())
