@@ -1,4 +1,4 @@
-package main
+package reports
 
 import (
 	"bufio"
@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/BryanKMorrow/reports-v2/src/system/aqua"
 )
 
 // VulnerabilityResource is used in the ResourceReport below
@@ -27,6 +29,45 @@ type ResourceReport struct {
 	Version       string
 	Arch          string
 	Vulnerability []VulnerabilityResource
+}
+
+// WriteHTMLReport - Generates the HTML report
+func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulnerabilities, malw aqua.Malware, sens aqua.Sensitive) string {
+	path := createHTMLFile(image, tag, ir.Registry)
+	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	writer := bufio.NewWriter(w)
+
+	writeHTMLRiskv2("assets/risk1.inc", ir, writer, w)
+	//Compliance SVG Check
+	if ir.Disallowed {
+		str := getSvgNonCompliant(ir)
+		writer.WriteString(str)
+	} else {
+		str := getSvgCompliant(ir)
+		writer.WriteString(str)
+	}
+	writeHTMLRiskv2("assets/risk2.inc", ir, writer, w)
+	// Image Assurance if Non-Compliant
+	if ir.Disallowed {
+		writeHTMLRiskNonCompliant(ir, writer, w)
+	}
+	writeHTMLRiskv2("assets/risk3.inc", ir, writer, w)
+	m := getResourceFromVuln(vuln)
+	writeHTMLResource(m, writer, w)
+	writeHTMLVulnerability(vuln, writer, w)
+	writeHTMLRiskv2("assets/risk4.inc", ir, writer, w)
+	writeHTMLSensitive(sens, writer, w)
+	writeHTMLRiskv2("assets/risk5.inc", ir, writer, w)
+	writeHTMLMalware(malw, writer, w)
+	writeHTMLRiskv2("assets/risk6.inc", ir, writer, w)
+	w.Close()
+
+	str := fmt.Sprintf("Report for image: %s created successfully.", image+":"+tag)
+	log.Println(str)
+	return str
 }
 
 func createHTMLFile(image, tag, registry string) string {
@@ -60,7 +101,7 @@ func writeHTMLOne(image, tag, registry, inc string, writer *bufio.Writer, w *os.
 	writer.Flush()
 }
 
-func getSvgCompliant(ir ImageRisk) string {
+func getSvgCompliant(ir aqua.ImageRisk) string {
 	str := fmt.Sprintf(`<div class="image-status box">	
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-check text-success">
 			<title>check-circle</title>
@@ -73,7 +114,7 @@ func getSvgCompliant(ir ImageRisk) string {
 	return str
 }
 
-func getSvgNonCompliant(ir ImageRisk) string {
+func getSvgNonCompliant(ir aqua.ImageRisk) string {
 	str := fmt.Sprintf(`<div class="image-status box">
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
 			<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
@@ -84,7 +125,7 @@ func getSvgNonCompliant(ir ImageRisk) string {
 	return str
 }
 
-func writeHTMLRiskNonCompliantv2(ir ImageRisk, writer *bufio.Writer, w *os.File) {
+func writeHTMLRiskNonCompliantv2(ir aqua.ImageRisk, writer *bufio.Writer, w *os.File) {
 	str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
 		<path d="M30.587 30.447c-0.009 0-0.017 0-0.027 0h-29.259c-0.469 0-0.905-0.248-1.144-0.652-0.24-0.403-0.248-0.904-0.021-1.315l14.629-26.533c0.467-0.847 1.864-0.847 2.331 0l14.516 26.328c0.191 0.229 0.305 0.524 0.305 0.845 0 0.732-0.596 1.327-1.331 1.327zM15.931 5.34l-12.38 22.453h24.76l-12.38-22.453zM15.931 11.873c0.735 0 1.331 0.593 1.331 1.327v6.633c0 0.732-0.596 1.327-1.331 1.327s-1.329-0.595-1.329-1.327v-6.633c0-0.733 0.595-1.327 1.329-1.327zM16.879 22.871c0.239 0.252 0.385 0.597 0.385 0.943s-0.147 0.689-0.399 0.941c-0.24 0.239-0.585 0.385-0.931 0.385-0.36 0-0.692-0.147-0.944-0.385-0.253-0.252-0.387-0.596-0.387-0.941s0.133-0.691 0.387-0.943c0.491-0.491 1.396-0.491 1.888 0z"></path>
 		</svg>`)
@@ -92,7 +133,7 @@ func writeHTMLRiskNonCompliantv2(ir ImageRisk, writer *bufio.Writer, w *os.File)
 
 }
 
-func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
+func writeHTMLRiskNonCompliant(ir aqua.ImageRisk, writer *bufio.Writer, w *os.File) {
 	for _, fail := range ir.AssuranceResults.ChecksPerformed {
 		if (fail.Failed) && (fail.Control == "cve_blacklist") {
 			str := fmt.Sprintf(`<li><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="icon-warning-triangle text-alert">
@@ -151,7 +192,7 @@ func writeHTMLRiskNonCompliant(ir ImageRisk, writer *bufio.Writer, w *os.File) {
 	writer.Flush()
 }
 
-func writeHTMLRiskv2(inc string, ir ImageRisk, writer *bufio.Writer, w *os.File) {
+func writeHTMLRiskv2(inc string, ir aqua.ImageRisk, writer *bufio.Writer, w *os.File) {
 	f, err := os.Open(inc)
 	if err != nil {
 		log.Fatal(err)
@@ -200,7 +241,7 @@ func writeHTMLRiskv2(inc string, ir ImageRisk, writer *bufio.Writer, w *os.File)
 	writer.Flush()
 }
 
-func writeHTMLSensitive(sens Sensitive, writer *bufio.Writer, w *os.File) {
+func writeHTMLSensitive(sens aqua.Sensitive, writer *bufio.Writer, w *os.File) {
 	if sens.Count == 0 {
 		writer.WriteString(`<tr><td colspan="2"><em>No sensitive data found during scan</em></td></tr>`)
 	} else {
@@ -211,7 +252,7 @@ func writeHTMLSensitive(sens Sensitive, writer *bufio.Writer, w *os.File) {
 	writer.Flush()
 }
 
-func writeHTMLMalware(malw Malware, writer *bufio.Writer, w *os.File) {
+func writeHTMLMalware(malw aqua.Malware, writer *bufio.Writer, w *os.File) {
 	if malw.Count == 0 {
 		writer.WriteString(`<tr><td colspan="2"><em>No malware detected during scan</em></td></tr>`)
 	} else {
@@ -222,7 +263,7 @@ func writeHTMLMalware(malw Malware, writer *bufio.Writer, w *os.File) {
 	writer.Flush()
 }
 
-func writeHTMLVulnerability(vulns ImageVulnerabilities, writer *bufio.Writer, w *os.File) {
+func writeHTMLVulnerability(vulns aqua.ImageVulnerabilities, writer *bufio.Writer, w *os.File) {
 	str := fmt.Sprintf(`<table id="cves" class="table-data vulns"><thead><tr>
 							<th scope="col">Name</th>
 							<th scope="col">Resource</th>
@@ -292,7 +333,7 @@ func writeHTMLResource(vulns map[string]ResourceReport, writer *bufio.Writer, w 
 	writer.Flush()
 }
 
-func getResourceFromVuln(vulns ImageVulnerabilities) map[string]ResourceReport {
+func getResourceFromVuln(vulns aqua.ImageVulnerabilities) map[string]ResourceReport {
 	var m map[string]ResourceReport
 	m = make(map[string]ResourceReport)
 	for _, result := range vulns.Result {
