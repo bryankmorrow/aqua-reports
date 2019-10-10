@@ -52,6 +52,7 @@ func All(w http.ResponseWriter, r *http.Request) {
 	}
 	irList.Count = i
 	irList.Response = responseList
+	log.Println(irList)
 	json.NewEncoder(w).Encode(irList)
 }
 

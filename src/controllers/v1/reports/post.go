@@ -12,7 +12,7 @@ import (
 // Post - Take a list of images and get their risk
 func Post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
+	defer Track(RunningTime("Post"))
 	log.Println("/reports/post route called")
 	var imageList []ImageResponse
 	var irList ImageResponseList

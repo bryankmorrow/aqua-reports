@@ -13,6 +13,8 @@ import (
 
 // One - Get one image
 func One(w http.ResponseWriter, r *http.Request) {
+	log.Println("I should be tracking the function time")
+	defer Track(RunningTime("One"))
 	log.Println("/reports/one route called")
 	w.Header().Set("Content-Type", "application/json")
 	var responseList []ImageResponse
