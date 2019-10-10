@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/aqua"
-	"github.com/BryanKMorrow/reports-v2/src/system/reports"
+	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
+	"github.com/BryanKMorrow/aqua-reports/src/system/reports"
 )
 
 // Post - Take a list of images and get their risk

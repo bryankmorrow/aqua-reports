@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/aqua"
-	"github.com/BryanKMorrow/reports-v2/src/system/reports"
+	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
+	"github.com/BryanKMorrow/aqua-reports/src/system/reports"
 	"github.com/gorilla/mux"
 )
 
 // One - Get one image
 func One(w http.ResponseWriter, r *http.Request) {
-	log.Println("I should be tracking the function time")
 	defer Track(RunningTime("One"))
 	log.Println("/reports/one route called")
 	w.Header().Set("Content-Type", "application/json")

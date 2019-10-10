@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/router"
+	"github.com/BryanKMorrow/aqua-reports/src/system/router"
 	"github.com/gorilla/handlers"
 )
 

@@ -2,7 +2,6 @@ package aqua
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -388,8 +387,7 @@ func (csp *CSP) GetAllImages() []ImageList {
 	var imageList = []ImageList{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
-	log.Println("Using the new Query method")
-	events, body, errs := request.Clone().Query(`{filter: '', include_totals: 'true', order_by: 'name'}`).Get(csp.url + "/api/v2/repositories").End()
+	events, body, errs := request.Clone().Get(csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name").End()
 	if errs != nil {
 		log.Println(events.StatusCode)
 	}
@@ -401,8 +399,8 @@ func (csp *CSP) GetAllImages() []ImageList {
 		}
 		for _, result := range data.Result {
 			var list = ImageList{}
-			query := fmt.Sprintf("{name: \"%s\", page_size: %s}", result.Name, strconv.Itoa(result.NumImages))
-			events, body, errs = request.Clone().Query(query).Get(csp.url + "/api/v2/images").End()
+			events, body, errs = request.Clone().Get(csp.url + "/api/v2/images?name=" + result.Name + "&page_size=" +
+				strconv.Itoa(result.NumImages)).End()
 			if errs != nil {
 				log.Println(events.StatusCode)
 			}

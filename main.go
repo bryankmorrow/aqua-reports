@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/app"
+	"github.com/BryanKMorrow/aqua-reports/src/system/app"
 )
 
 func main() {

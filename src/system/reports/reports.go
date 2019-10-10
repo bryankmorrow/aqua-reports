@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/aqua"
+	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
 )
 
 // VulnerabilityResource is used in the ResourceReport below

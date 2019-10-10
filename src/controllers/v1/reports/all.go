@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/BryanKMorrow/reports-v2/src/system/aqua"
-	"github.com/BryanKMorrow/reports-v2/src/system/reports"
+	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
+	"github.com/BryanKMorrow/aqua-reports/src/system/reports"
 )
 
 // ImageResponseList for returning  all report status
@@ -52,7 +52,6 @@ func All(w http.ResponseWriter, r *http.Request) {
 	}
 	irList.Count = i
 	irList.Response = responseList
-	log.Println(irList)
 	json.NewEncoder(w).Encode(irList)
 }
 
@@ -65,5 +64,5 @@ func RunningTime(s string) (string, time.Time) {
 // Track - Stop the Timer
 func Track(s string, startTime time.Time) {
 	endTime := time.Now()
-	log.Println("End:	", s, "took", endTime.Sub(startTime))
+	log.Println("End: ", s, "took", endTime.Sub(startTime))
 }

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/BryanKMorrow/reports-v2/pkg/types/routes"
-	HomeHandler "github.com/BryanKMorrow/reports-v2/src/controllers/home"
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
+	HomeHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/home"
 )
 
 // Middleware - Main Middleware function

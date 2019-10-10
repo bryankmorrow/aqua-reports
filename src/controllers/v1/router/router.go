@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/BryanKMorrow/reports-v2/pkg/types/routes"
-	ReportsHandler "github.com/BryanKMorrow/reports-v2/src/controllers/v1/reports"
-	StatusHandler "github.com/BryanKMorrow/reports-v2/src/controllers/v1/status"
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
+	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
+	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
 )
 
 // Middleware - Handler to check for authentication

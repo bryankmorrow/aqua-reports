@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/BryanKMorrow/reports-v2/pkg/types/routes"
-	V1SubRoutes "github.com/BryanKMorrow/reports-v2/src/controllers/v1/router"
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
+	V1SubRoutes "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/router"
 
 	"github.com/gorilla/mux"
 )
