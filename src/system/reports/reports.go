@@ -352,3 +352,86 @@ func getResourceFromVuln(vulns aqua.ImageVulnerabilities) map[string]ResourceRep
 	}
 	return m
 }
+
+// WriteHTMLOverview - Create and write the executive dashboard
+func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers) {
+	asset := "assets/overview.inc"
+	path := "reports/overview.html"
+	err := os.Remove(path)
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Previous overview report deleted successfully")
+	}
+	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	writer := bufio.NewWriter(w)
+	f, err := os.Open(asset)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "&&RUNNING&&") {
+			str := strings.Replace(scanner.Text(), "&&RUNNING&&", strconv.Itoa(overview.RunningContainers.Total), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&UNREGISTERED&&") {
+			str := strings.Replace(scanner.Text(), "&&UNREGISTERED&&", strconv.Itoa(overview.RunningContainers.Unregistered), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&CONTAINERSHIGH&&") {
+			str := strings.Replace(scanner.Text(), "&&CONTAINERSHIGH&&", strconv.Itoa(overview.RunningContainers.High), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&CONTAINERSOK&&") {
+			str := strings.Replace(scanner.Text(), "&&CONTAINERSOK&&", strconv.Itoa(overview.RunningContainers.Ok), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESSCANNED&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESSCANNED&&", strconv.Itoa(overview.RegistryCounts.Images.Total), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESHIGH&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESHIGH&&", strconv.Itoa(overview.RegistryCounts.Images.High), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESMEDIUM&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESMEDIUM&&", strconv.Itoa(overview.RegistryCounts.Images.Medium), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESLOW&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESLOW&&", strconv.Itoa(overview.RegistryCounts.Images.Low), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESOK&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESOK&&", strconv.Itoa(overview.RegistryCounts.Images.Ok), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&VULNTOTAL&&") {
+			str := strings.Replace(scanner.Text(), "&&VULNTOTAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Total), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&VULNHIGH&&") {
+			str := strings.Replace(scanner.Text(), "&&VULNHIGH&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.High), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&VULNMEDIUM&&") {
+			str := strings.Replace(scanner.Text(), "&&VULNMEDIUM&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Medium), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&VULNLOW&&") {
+			str := strings.Replace(scanner.Text(), "&&VULNLOW&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Low), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&ENFORCERCOUNT&&") {
+			str := strings.Replace(scanner.Text(), "&&ENFORCERCOUNT&&", strconv.Itoa(enforcers.Count), 1)
+			writer.WriteString(str)
+		} else {
+			writer.WriteString(scanner.Text())
+		}
+	}
+	for _, enforcer := range enforcers.Result {
+		var m string
+		if enforcer.Enforce {
+			m = "Enforce"
+		} else {
+			m = "Audit"
+		}
+		str := fmt.Sprintf("<p class=\"card-text\">Name: %s,  Hostname: %s,  Type: %s,  Status:  %s,  Mode: %s </p>",
+			enforcer.Logicalname, enforcer.Hostname, enforcer.Type, enforcer.Status, m)
+		writer.WriteString(str)
+	}
+	writer.WriteString("</div></div></div></div></main></div></body></html>")
+	writer.Flush()
+	w.Close()
+}

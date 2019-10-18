@@ -35,6 +35,7 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 				routes.Route{"ReportsAll", "GET", "/reports/all", ReportsHandler.All},
 				routes.Route{"Report", "GET", "/reports/{registry}/{image}/{tag}", ReportsHandler.One},
 				routes.Route{"Reports", "POST", "/reports/images", ReportsHandler.Post},
+				routes.Route{"ExecutiveOverview", "GET", "/reports/overview", ReportsHandler.Overview},
 			},
 			Middleware: Middleware,
 		},

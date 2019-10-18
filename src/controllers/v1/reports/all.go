@@ -26,8 +26,7 @@ type ImageResponse struct {
 
 // All - This is the HTTP Handler to display the HTML Report and JSON output
 func All(w http.ResponseWriter, r *http.Request) {
-	defer Track(RunningTime("All"))
-	log.Println("/reports/all route called")
+	defer Track(RunningTime("/reports/all"))
 	w.Header().Set("Content-Type", "application/json")
 	var irList ImageResponseList
 	var responseList []ImageResponse
@@ -57,12 +56,12 @@ func All(w http.ResponseWriter, r *http.Request) {
 
 // RunningTime - Start the Timer
 func RunningTime(s string) (string, time.Time) {
-	log.Println("Start:	", s)
+	log.Printf("Start:	%s route", s)
 	return s, time.Now()
 }
 
 // Track - Stop the Timer
 func Track(s string, startTime time.Time) {
 	endTime := time.Now()
-	log.Println("End: ", s, "took", endTime.Sub(startTime))
+	log.Printf("End: %s route took %v", s, endTime.Sub(startTime))
 }
