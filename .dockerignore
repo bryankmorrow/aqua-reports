@@ -1,0 +1,10 @@
+.DS_Store
+.git
+.gitignore
+.vscode/
+helm/
+kubernetes/
+images/
+Dockerfile
+README.md
+.dockerignore
