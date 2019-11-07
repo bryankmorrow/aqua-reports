@@ -11,26 +11,6 @@ import (
 	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
 )
 
-// VulnerabilityResource is used in the ResourceReport below
-type VulnerabilityResource struct {
-	Name       string
-	Severity   string
-	Score      float64
-	URL        string
-	FixVersion string
-}
-
-// ResourceReport is used to create the Vulnerabilities Tab in HTML Report
-type ResourceReport struct {
-	Type          string
-	Format        string
-	Path          string
-	Name          string
-	Version       string
-	Arch          string
-	Vulnerability []VulnerabilityResource
-}
-
 // WriteHTMLReport - Generates the HTML report
 func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulnerabilities, malw aqua.Malware, sens aqua.Sensitive) string {
 	path := createHTMLFile(image, tag, ir.Registry)
@@ -383,11 +363,17 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 		} else if strings.Contains(scanner.Text(), "&&CONTAINERSHIGH&&") {
 			str := strings.Replace(scanner.Text(), "&&CONTAINERSHIGH&&", strconv.Itoa(overview.RunningContainers.High), 1)
 			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&CONTAINERSCRITICAL&&") {
+			str := strings.Replace(scanner.Text(), "&&CONTAINERSCRITICAL&&", strconv.Itoa(overview.RunningContainers.High), 1)
+			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&CONTAINERSOK&&") {
 			str := strings.Replace(scanner.Text(), "&&CONTAINERSOK&&", strconv.Itoa(overview.RunningContainers.Ok), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&IMAGESSCANNED&&") {
 			str := strings.Replace(scanner.Text(), "&&IMAGESSCANNED&&", strconv.Itoa(overview.RegistryCounts.Images.Total), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&IMAGESCRITICAL&&") {
+			str := strings.Replace(scanner.Text(), "&&IMAGESCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Images.High), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&IMAGESHIGH&&") {
 			str := strings.Replace(scanner.Text(), "&&IMAGESHIGH&&", strconv.Itoa(overview.RegistryCounts.Images.High), 1)
@@ -403,6 +389,9 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&VULNTOTAL&&") {
 			str := strings.Replace(scanner.Text(), "&&VULNTOTAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Total), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&VULNCRITICAL&&") {
+			str := strings.Replace(scanner.Text(), "&&VULNCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Total), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&VULNHIGH&&") {
 			str := strings.Replace(scanner.Text(), "&&VULNHIGH&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.High), 1)
