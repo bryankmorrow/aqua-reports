@@ -411,13 +411,19 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 	}
 	for _, enforcer := range enforcers.Result {
 		var m string
+		var status string
 		if enforcer.Enforce {
 			m = "Enforce"
 		} else {
 			m = "Audit"
 		}
-		str := fmt.Sprintf("<p class=\"card-text\">Name: %s,  Hostname: %s,  Type: %s,  Status:  %s,  Mode: %s </p>",
-			enforcer.Logicalname, enforcer.Hostname, enforcer.Type, enforcer.Status, m)
+		if enforcer.Status == "connect" {
+			status = "online"
+		} else {
+			status = "offline"
+		}
+		str := fmt.Sprintf("<p class=\"card-text\">Name: %s &emsp; Hostname: %s &emsp; Type: %s &emsp; Status:  %s &emsp; Mode: %s </p>",
+			enforcer.Logicalname, enforcer.Hostname, enforcer.Type, status, m)
 		writer.WriteString(str)
 	}
 	writer.WriteString("</div></div></div></div></main></div></body></html>")

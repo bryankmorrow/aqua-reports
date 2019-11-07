@@ -100,7 +100,8 @@
        </div>
       </div>
      </div>
-     <div class="row">
+
+     <div class="row" style="padding-top: 5px; padding-left: 20px; padding-right: 20px">
        <div class="col">
        <div class="card">
         <div class="card-body">
