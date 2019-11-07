@@ -9,6 +9,11 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
+var Mode string
+var URL string
+var User string
+var Password string
+
 // NewCSP - initialize the CSP
 func NewCSP() CSP {
 	return CSP{}
@@ -16,10 +21,16 @@ func NewCSP() CSP {
 
 // ConnectCSP - Connect to Aqua and return a JWT bearerToken (string)
 func (csp *CSP) ConnectCSP() {
-	// Get Environment Parameters
-	csp.url = os.Getenv("AQUA_URL")
-	csp.user = os.Getenv("AQUA_USER")
-	csp.password = os.Getenv("AQUA_PASSWORD")
+	if Mode == "cli" {
+		csp.url = URL
+		csp.user = User
+		csp.password = Password
+	} else {
+		// Get Environment Parameters
+		csp.url = os.Getenv("AQUA_URL")
+		csp.user = os.Getenv("AQUA_USER")
+		csp.password = os.Getenv("AQUA_PASSWORD")
+	}
 
 	request := gorequest.New()
 	resp, body, errs := request.Post(csp.url + "/api/v1/login").Send(`{"id":"` + csp.user + `", "password":"` + csp.password + `"}`).End()
