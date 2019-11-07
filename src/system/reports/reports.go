@@ -364,7 +364,7 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 			str := strings.Replace(scanner.Text(), "&&CONTAINERSHIGH&&", strconv.Itoa(overview.RunningContainers.High), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&CONTAINERSCRITICAL&&") {
-			str := strings.Replace(scanner.Text(), "&&CONTAINERSCRITICAL&&", strconv.Itoa(overview.RunningContainers.High), 1)
+			str := strings.Replace(scanner.Text(), "&&CONTAINERSCRITICAL&&", strconv.Itoa(overview.RunningContainers.Critical), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&CONTAINERSOK&&") {
 			str := strings.Replace(scanner.Text(), "&&CONTAINERSOK&&", strconv.Itoa(overview.RunningContainers.Ok), 1)
@@ -373,7 +373,7 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 			str := strings.Replace(scanner.Text(), "&&IMAGESSCANNED&&", strconv.Itoa(overview.RegistryCounts.Images.Total), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&IMAGESCRITICAL&&") {
-			str := strings.Replace(scanner.Text(), "&&IMAGESCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Images.High), 1)
+			str := strings.Replace(scanner.Text(), "&&IMAGESCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Images.Critical), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&IMAGESHIGH&&") {
 			str := strings.Replace(scanner.Text(), "&&IMAGESHIGH&&", strconv.Itoa(overview.RegistryCounts.Images.High), 1)
@@ -391,7 +391,7 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 			str := strings.Replace(scanner.Text(), "&&VULNTOTAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Total), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&VULNCRITICAL&&") {
-			str := strings.Replace(scanner.Text(), "&&VULNCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Total), 1)
+			str := strings.Replace(scanner.Text(), "&&VULNCRITICAL&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Critical), 1)
 			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&VULNHIGH&&") {
 			str := strings.Replace(scanner.Text(), "&&VULNHIGH&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.High), 1)
