@@ -36,7 +36,7 @@ func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulner
 	path := createHTMLFile(image, tag, ir.Registry)
 	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	writer := bufio.NewWriter(w)
 
@@ -84,7 +84,7 @@ func createHTMLFile(image, tag, registry string) string {
 func writeHTMLOne(image, tag, registry, inc string, writer *bufio.Writer, w *os.File) {
 	f, err := os.Open(inc)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -195,7 +195,7 @@ func writeHTMLRiskNonCompliant(ir aqua.ImageRisk, writer *bufio.Writer, w *os.Fi
 func writeHTMLRiskv2(inc string, ir aqua.ImageRisk, writer *bufio.Writer, w *os.File) {
 	f, err := os.Open(inc)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -365,12 +365,12 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 	}
 	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	writer := bufio.NewWriter(w)
 	f, err := os.Open(asset)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {

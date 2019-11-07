@@ -66,6 +66,7 @@
             <h3 class="card-title">Containers</h3>
             <p class="card-text">Running: &&RUNNING&&</p>
             <p class="card-text">Unregistered:  &&UNREGISTERED&&</p>
+            <p class="card-text">With Critical Vulnerabilities: &&CONTAINERSCRITICAL&&</p>
             <p class="card-text">With High Vulnerabilities: &&CONTAINERSHIGH&&</p>
             <p class="card-text">With No Vulnerabilities: &&CONTAINERSOK&&</p>
             
@@ -76,8 +77,9 @@
        <div class="card">
         <div class="card-body">
             <h3 class="card-title">Images</h3>
-            <p class="card-text">Registered: &&IMAGESSCANNED&&</p>
-            <p class="card-text">Registered: &&IMAGESOK&&</p>
+            <p class="card-text">Total Registered: &&IMAGESSCANNED&&</p>
+            <p class="card-text">With No Vulnerabilities: &&IMAGESOK&&</p>
+            <p class="card-text">With Critical Vulnerabilities:  &&IMAGESCRITICAL&&</p>
             <p class="card-text">With High Vulnerabilities:  &&IMAGESHIGH&&</p>
             <p class="card-text">With Medium Vulnerabilities: &&IMAGESMEDIUM&&</p>
             <p class="card-text">With Low Vulnerabilities: &&IMAGESLOW&&</p>
@@ -90,6 +92,7 @@
         <div class="card-body">
             <h3 class="card-title">Vulnerabilities</h3>
             <p class="card-text">Total: &&VULNTOTAL&&</p>
+            <p class="card-text">Critical:  &&VULNCRITICAL&&</p>
             <p class="card-text">High:  &&VULNHIGH&&</p>
             <p class="card-text">Medium: &&VULNMEDIUM&&</p>
             <p class="card-text">Low: &&VULNLOW&&</p>

@@ -22,19 +22,19 @@ func One(w http.ResponseWriter, r *http.Request) {
 	encodedRegistry := params["registry"]
 	registry, err := url.QueryUnescape(encodedRegistry)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	encodedImage := params["image"]
 	image, err := url.QueryUnescape(encodedImage)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	encodedTag := params["tag"]
 	tag, err := url.QueryUnescape(encodedTag)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 

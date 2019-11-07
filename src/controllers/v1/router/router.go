@@ -29,7 +29,7 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 
 	/* ROUTES */
 	SubRoute = map[string]routes.SubRoutePackage{
-		"/v1": {
+		"/api/v1": {
 			Routes: routes.Routes{
 				routes.Route{"Status", "GET", "/status", StatusHandler.Index},
 				routes.Route{"ReportsAll", "GET", "/reports/all", ReportsHandler.All},

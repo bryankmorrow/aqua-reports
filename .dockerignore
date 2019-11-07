@@ -8,3 +8,4 @@ images/
 Dockerfile
 README.md
 .dockerignore
+.travis.yml
