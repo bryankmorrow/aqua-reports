@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/BryanKMorrow/aqua-reports)](https://goreportcard.com/report/github.com/BryanKMorrow/aqua-reports)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/BryanKMorrow/aqua-reports/blob/master/LICENSE)
 
-<img src="imgages/aqua-reports-image-compliance.png" width="600">
+<img src="images/aqua-reports-image-compliance.png" width="600">
 
 # Table of Contents
 
