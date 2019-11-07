@@ -9,6 +9,7 @@ WORKDIR /go/src/github.com/BryanKMorrow/aqua-reports/
 # Build it:
 RUN cd /go/src/github.com/BryanKMorrow/aqua-reports
 RUN go get "github.com/gorilla/mux"; go get "github.com/parnurzeal/gorequest"; go get "github.com/gorilla/handlers"
-RUN go build -o aqua-reports *.go
+RUN go build -o aqua-reports cmd/aqua-reports/*.go
 
-ENTRYPOINT ["./aqua-reports"]
+CMD []
+ENTRYPOINT ["./aqua-reports", "--mode", "container"]
