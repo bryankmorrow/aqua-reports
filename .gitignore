@@ -3,3 +3,4 @@
 reports/
 kubernetes/aqua-reports.yaml
 helm/
+aqua-reports
