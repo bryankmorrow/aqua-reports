@@ -1,7 +1,5 @@
 
-Dockerfile
-aqua-reports
-*.xlsx
-.vscode/launch.json
-/reports
+.vscode/
+reports/
 kubernetes/aqua-reports.yaml
+helm/
