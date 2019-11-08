@@ -1,6 +1,7 @@
 package app
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -9,6 +10,30 @@ import (
 	"github.com/BryanKMorrow/aqua-reports/src/system/router"
 	"github.com/gorilla/handlers"
 )
+
+// ModeFlag - command line parameter to determine where to get the arguments
+var ModeFlag string
+
+// URLFlag - command line parameter to determine where to get the Aqua CSP URL argument
+var URLFlag string
+
+// UserFlag - command line parameter to determine where to get the CSP user argument
+var UserFlag string
+
+// PasswordFlag - command line parameter to determine where to get the CSP password argument
+var PasswordFlag string
+
+// PortFlag - command line parameter to determine where to get the application port argument
+var PortFlag int
+
+func init() {
+	flag.StringVar(&ModeFlag, "mode", "cli", "cli or container")
+	flag.StringVar(&URLFlag, "url", "", "Address to Aqua CSP web console")
+	flag.StringVar(&UserFlag, "user", "", "Aqua CSP API username")
+	flag.StringVar(&PasswordFlag, "password", "", "Aqua CSP API user password")
+	flag.IntVar(&PortFlag, "port", 0, "Specify the port for this application")
+	flag.Parse()
+}
 
 // Server - structure for the API server
 type Server struct {
