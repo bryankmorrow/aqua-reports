@@ -58,15 +58,6 @@ go install
 
 ## Basic
 
-Set the required environment variables.
-
-```sh
-export AQUA_URL=http://<url to aqua console>   (note: just the base url)
-export AQUA_USER=<api user>
-export AQUA_PASSWORD=<api user password>
-export AQUA_REPORTS_PORT=<port for webserver>
-```
-
 Start the web server.
 
 ```sh
@@ -76,6 +67,15 @@ aqua-reports --mode cli --url http://<url to aqua console> --user <api user> --p
 ## Docker
 
 Pull and run the image.
+
+Set the required environment variables.
+
+```sh
+export AQUA_URL=http://<url to aqua console>   (note: just the base url)
+export AQUA_USER=<api user>
+export AQUA_PASSWORD=<api user password>
+export AQUA_REPORTS_PORT=<port for webserver>
+```
 
 ```sh
 docker pull bkmorrow/aqua-reports:latest
