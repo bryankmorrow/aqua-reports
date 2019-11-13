@@ -99,7 +99,7 @@ curl https://aquasec.example.com:8000/api/v1/reports/all
 ## One Image
 
 ```sh
-curl https://aquasec.example.com:8000/api/v1/reports/one
+curl https://aquasec.example.com:8000/api/v1/reports/Docker%20FHub/centos/7
 ```
 
 ## List of Images

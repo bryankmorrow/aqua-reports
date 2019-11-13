@@ -188,11 +188,6 @@ h2{
     background-color:#91b94f;
     color:#fff
 }
-table{
-    width:100%;
-    margin:1em auto;
-    border-collapse:collapse
-}
 #summary tr:first-child td{
     padding:.75em;
     font-size:1.5em;
@@ -245,58 +240,6 @@ table{
 }
 .more-info,input[type=checkbox].group-by:checked~.wrapper .vulns{
     display:none
-}
-.table-data{
-    margin-top:0;
-    width:calc(100% - 5px);
-    text-align:left;
-    background:#f9f9f9;
-    border:1px solid #1f9fba;
-    border-bottom:none;
-    border-right: 2px solid #1f9fba;
-}
-#cves.table-data{
-    border:none
-}
-.table-data:last-child{
-    border-bottom:1px solid #1f9fba
-}
-.table-data caption{
-    margin-bottom:.6em
-}
-.table-data .data-item,.table-data td,.table-data th{
-    padding:7px 10px;
-    border:1px solid #1f9fba;
-    position:relative
-}
-.table-data .data-item{
-    border:none;
-}
-.table-data .data-item:last-child{
-    border-right:none
-}
-.table-data th{
-    border:none;
-    background:#fff
-}
-.more-info td,.more-info th{
-    border:1px solid #ccc!important
-}
-.table-data th:first-child{
-    padding-left:32px
-}
-.table-data .chevron-down,.table-data .chevron-right,.table-data a{
-    text-decoration:none;
-    color:#08b1d5
-}
-.table-data a:hover{
-    text-decoration:underline
-}
-.table-data tr:hover{
-    background:#d5d2d0
-}
-.table-data tbody tr:nth-child(even) td{
-    background-color:#daf1f6
 }
 .more-info td{
     background:#fff!important;
@@ -533,4 +476,50 @@ input[type=radio].tab:checked+.label+.panel{
     text-overflow:ellipsis;
      width:700px;
      white-space: nowrap;
+}
+/* DATATABLES */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+  background: transparent;
+}
+.dataTables_wrapper {
+  padding-bottom: 30px;
+}
+.dataTables_length {
+  float: left;
+}
+.dataTables_filter label {
+  margin-right: 5px;
+}
+.html5buttons {
+  float: right;
+}
+.html5buttons a {
+  border: 1px solid #e7eaec;
+  background: #fff;
+  color: #676a6c;
+  box-shadow: none;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.html5buttons a:hover,
+.html5buttons a:focus:active {
+  background-color: #eee;
+  color: inherit;
+  border-color: #d2d2d2;
+}
+div.dt-button-info {
+  z-index: 100;
+}
+@media (max-width: 768px) {
+  .html5buttons {
+    float: none;
+    margin-top: 10px;
+  }
+  .dataTables_length {
+    float: none;
+  }
 }
