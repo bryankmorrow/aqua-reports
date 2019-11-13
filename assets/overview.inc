@@ -4,11 +4,16 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://aquademo.s3-us-west-2.amazonaws.com/report.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<style>
-		
-	</style>
+	<link rel="stylesheet" href="https://aquademo.s3-us-west-2.amazonaws.com/report.css">
+    <link rel="stylesheet" href="https://aquademo.s3-us-west-2.amazonaws.com/overview.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <!-- <script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script> -->
+    
     <title>Executive Overview - Aqua CSP</title>
 </head>
 <body>
@@ -60,49 +65,165 @@
 </header>
 <main class="content">
     <div class="row" style="padding-top: 5px; padding-left: 20px; padding-right: 20px">
-      <div class="col">
-       <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">Containers</h3>
-            <p class="card-text">Running: &&RUNNING&&</p>
-            <p class="card-text">Unregistered:  &&UNREGISTERED&&</p>
-            <p class="card-text">With Critical Vulnerabilities: &&CONTAINERSCRITICAL&&</p>
-            <p class="card-text">With High Vulnerabilities: &&CONTAINERSHIGH&&</p>
-            <p class="card-text">With No Vulnerabilities: &&CONTAINERSOK&&</p>
-            
+        <div class="col">
+            <div class="el-card flex1 mr-m chart-box is-always-shadow">
+                <div class="el-card__header">
+                    <div class="flex space-between center-v">
+                        <h5> Containers </h5>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div>
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-primary">&&RUNNING&&</h3>
+                                <span>Running</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-warning">&&UNREGISTERED&&</h3>
+                                <span>Unregistered</span>
+                            </div>
+                        </div> <!-- end of first row (flex border-bottom mb-s) -->
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-alert">&&CONTAINERSCRITICAL&&</h3>
+                                <span>Critical</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-danger">&&CONTAINERSHIGH&&</h3>
+                                <span>High</span>
+                            </div>
+                        </div> <!-- end of second row (flex border-bottom mb-s) -->    
+                    </div>  
+                </div>
+            </div>
         </div>
-       </div>
-      </div>
-      <div class="col">
-       <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">Images</h3>
-            <p class="card-text">Total Registered: &&IMAGESSCANNED&&</p>
-            <p class="card-text">With No Vulnerabilities: &&IMAGESOK&&</p>
-            <p class="card-text">With Critical Vulnerabilities:  &&IMAGESCRITICAL&&</p>
-            <p class="card-text">With High Vulnerabilities:  &&IMAGESHIGH&&</p>
-            <p class="card-text">With Medium Vulnerabilities: &&IMAGESMEDIUM&&</p>
-            <p class="card-text">With Low Vulnerabilities: &&IMAGESLOW&&</p>
-         </div>
-        </div>
-      </div>
 
-      <div class="col">
-       <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">Vulnerabilities</h3>
-            <p class="card-text">Total: &&VULNTOTAL&&</p>
-            <p class="card-text">Critical:  &&VULNCRITICAL&&</p>
-            <p class="card-text">High:  &&VULNHIGH&&</p>
-            <p class="card-text">Medium: &&VULNMEDIUM&&</p>
-            <p class="card-text">Low: &&VULNLOW&&</p>
+        <div class="col">
+            <div class="el-card flex1 mr-m chart-box is-always-shadow">
+                <div class="el-card__header">
+                    <div class="flex space-between center-v">
+                        <h5> Images </h5>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div>
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-primary">&&IMAGESSCANNED&&</h3>
+                                <span>Registered</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-success">&&IMAGESOK&&</h3>
+                                <span>Ok</span>
+                            </div>
+                        </div> <!-- end of first row (flex border-bottom mb-s) -->
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-alert">&&IMAGESCRITICAL&&</h3>
+                                <span>Critical</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-danger">&&IMAGESHIGH&&</h3>
+                                <span>High</span>
+                            </div>
+                        </div> <!-- end of second row (flex border-bottom mb-s) -->    
+                    </div>  
+                </div>
+            </div>
         </div>
-       </div>
-      </div>
-     </div>
 
-     <div class="row" style="padding-top: 5px; padding-left: 20px; padding-right: 20px">
-       <div class="col">
-       <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">Enforcers - Count: &&ENFORCERCOUNT&&</h3>
+        <div class="col">
+            <div class="el-card flex1 mr-m chart-box is-always-shadow">
+                <div class="el-card__header">
+                    <div class="flex space-between center-v">
+                        <h5> Vulnerabilities </h5>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div>
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-primary">&&VULNTOTAL&&</h3>
+                                <span>Total</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-alert">&&VULNCRITICAL&&</h3>
+                                <span>Critical</span>
+                            </div>
+                        </div> <!-- end of first row (flex border-bottom mb-s) -->
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs text-danger">&&VULNHIGH&&</h3>
+                                <span>High</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs text-warning">&&VULNMEDIUM&&</h3>
+                                <span>Medium</span>
+                            </div>
+                        </div> <!-- end of second row (flex border-bottom mb-s) -->    
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top: 5px; padding-left: 20px; padding-right: 20px">
+        <div class="col">
+            <div class="el-card flex1 mr-m chart-box is-always-shadow">
+                <div class="el-card__header">
+                    <div class="flex space-between center-v">
+                        <h5> Assurance Policies </h5>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div>
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs">&&ASSURANCEIMAGE&&</h3>
+                                <span>Image</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs">&&ASSURANCEHOST&&</h3>
+                                <span>Host</span>
+                            </div>
+                        </div> <!-- end of first row (flex border-bottom mb-s) -->
+                        <div class="flex border-bottom mb-s">
+                            <div class="flex-col center-v center-h flex1 pb-s border-right">
+                                <h3 class="mb-xs">&&ASSURANCEFUNCTION&&</h3>
+                                <span>Function</span>
+                            </div>
+                            <div class="flex-col center-v center-h flex1 pb-s">
+                                <h3 class="mb-xs">&&ASSURANCEPCF&&</h3>
+                                <span>PAS</span>
+                            </div>
+                        </div> <!-- end of second row (flex border-bottom mb-s) -->    
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" style="padding-top: 5px; padding-left: 20px; padding-right: 20px">
+        <div class="col">
+            <div class="el-card flex1 mr-m chart-box is-always-shadow">
+                <div class="el-card__header">
+                    <div class="flex space-between center-v">
+                        <h5> Enforcers - Count: &&ENFORCERCOUNT&& </h5>
+                    </div>
+                </div>  
+                <div class="el-card__body">
+                    <div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover enforcers">
+                                <thead>
+                                    <tr>
+                                    <th>Logical Name</th>
+                                    <th>Hostname</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                

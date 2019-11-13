@@ -53,7 +53,7 @@ func Overview(w http.ResponseWriter, r *http.Request) {
 	overview, enforcers := csp.GetExecutiveOverview()
 	assurance := csp.AssuranceOverview()
 
-	reports.WriteHTMLOverview(overview, enforcers)
+	reports.WriteHTMLOverview(overview, enforcers, assurance)
 
 	var response = OverviewResponse{}
 	response.Containers.Running = overview.RunningContainers.Total

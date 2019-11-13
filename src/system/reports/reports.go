@@ -334,7 +334,7 @@ func getResourceFromVuln(vulns aqua.ImageVulnerabilities) map[string]ResourceRep
 }
 
 // WriteHTMLOverview - Create and write the executive dashboard
-func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers) {
+func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers, assurance aqua.ResponseAssurance) {
 	asset := "assets/overview.inc"
 	path := "reports/overview.html"
 	err := os.Remove(path)
@@ -402,6 +402,18 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 		} else if strings.Contains(scanner.Text(), "&&VULNLOW&&") {
 			str := strings.Replace(scanner.Text(), "&&VULNLOW&&", strconv.Itoa(overview.RegistryCounts.Vulnerabilities.Low), 1)
 			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&ASSURANCEIMAGE&&") {
+			str := strings.Replace(scanner.Text(), "&&ASSURANCEIMAGE&&", strconv.Itoa(assurance.Image), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&ASSURANCEHOST&&") {
+			str := strings.Replace(scanner.Text(), "&&ASSURANCEHOST&&", strconv.Itoa(assurance.Host), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&ASSURANCEFUNCTION&&") {
+			str := strings.Replace(scanner.Text(), "&&ASSURANCEFUNCTION&&", strconv.Itoa(assurance.Function), 1)
+			writer.WriteString(str)
+		} else if strings.Contains(scanner.Text(), "&&ASSURANCEPCF&&") {
+			str := strings.Replace(scanner.Text(), "&&ASSURANCEPCF&&", strconv.Itoa(assurance.PCF), 1)
+			writer.WriteString(str)
 		} else if strings.Contains(scanner.Text(), "&&ENFORCERCOUNT&&") {
 			str := strings.Replace(scanner.Text(), "&&ENFORCERCOUNT&&", strconv.Itoa(enforcers.Count), 1)
 			writer.WriteString(str)
@@ -418,15 +430,44 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 			m = "Audit"
 		}
 		if enforcer.Status == "connect" {
-			status = "online"
+			status = "Online"
 		} else {
-			status = "offline"
+			status = "Offline"
 		}
-		str := fmt.Sprintf("<p class=\"card-text\">Name: %s &emsp; Hostname: %s &emsp; Type: %s &emsp; Status:  %s &emsp; Mode: %s </p>",
+		str := fmt.Sprintf("<tr class=\"gradeX\"><td>%v</td><td>%v</td><td>%v</td><td>%v</td><td>%v</td></tr>\n",
 			enforcer.Logicalname, enforcer.Hostname, enforcer.Type, status, m)
 		writer.WriteString(str)
 	}
-	writer.WriteString("</div></div></div></div></main></div></body></html>")
+	writer.WriteString("</tbody><tfoot><tr><th>Logical Name</th><th>Hostname</th><th>Type</th><th>Status</th><th>Mode</th></tr></tfoot></table>\n")
+	writer.WriteString("</div></div></div></div></div></div></main></div>\n")
+	str := `<script>
+	$(document).ready(function(){
+		$('.enforcers').DataTable({
+			pageLength: 25,
+			responsive: true,
+			dom: '<"html5buttons"B>lTfgitp',
+			buttons: [
+				{ extend: 'copy'},
+				{extend: 'csv'},
+				{extend: 'excel', title: 'ExampleFile'},
+				{extend: 'pdf', title: 'ExampleFile'},
+
+				{extend: 'print',
+				 customize: function (win){
+						$(win.document.body).addClass('white-bg');
+						$(win.document.body).css('font-size', '10px');
+
+						$(win.document.body).find('table')
+								.addClass('compact')
+								.css('font-size', 'inherit');
+				}
+				}
+					]
+				});
+			});
+		</script>`
+	writer.WriteString(str)
+	writer.WriteString("</body></html>")
 	writer.Flush()
 	w.Close()
 }
