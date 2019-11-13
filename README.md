@@ -6,6 +6,8 @@
 
 <img src="images/aqua-reports-image-compliance.png" width="600">
 
+<img src="images/aqua-reports-executive-overview.png" width="600">
+
 # Table of Contents
 
 - [Abstract](#abstract)
