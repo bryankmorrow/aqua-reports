@@ -41,78 +41,29 @@ func (csp *CSP) ConnectCSP() {
 
 	if resp.StatusCode == 200 {
 		var raw map[string]interface{}
-		json.Unmarshal([]byte(body), &raw)
+		_ = json.Unmarshal([]byte(body), &raw)
 		csp.token = raw["token"].(string)
 	}
 }
 
 // GetAllImages - GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
-func (csp *CSP) GetAllImages() []ImageList {
-	var data = AllImages{}
-	var imageList = []ImageList{}
-	request := gorequest.New()
-	request.Set("Authorization", "Bearer "+csp.token)
-	events, body, errs := request.Clone().Get(csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name").End()
-	if errs != nil {
-		log.Println(events.StatusCode)
+func (csp *CSP) GetAllImages(ps, p string) []ImageList {
+	var imageList []ImageList
+	page, _ := strconv.Atoi(p)
+	pagesize, _ := strconv.Atoi(ps)
+	remaining, page, repos := csp.repositoryResult(pagesize, page)
+	for _, result := range repos.Result {
+		scanResult := csp.imageScanResult(result.Registry, result.Name, result.NumImages)
+		imageList = append(imageList, scanResult)
 	}
-	if events.StatusCode == 200 {
-		err := json.Unmarshal([]byte(body), &data)
-		if err != nil {
-			log.Println(err.Error())
-			//json: Unmarshal(non-pointer main.Request)
-		}
 
-		if data.Count <= 50 {
-			for _, result := range data.Result {
-				var list = ImageList{}
-				events, body, errs = request.Clone().Get(csp.url + "/api/v2/images?name=" + result.Name + "&page_size=" + strconv.Itoa(result.NumImages)).End()
-				if errs != nil {
-					log.Println(events.StatusCode)
-				}
-				if events.StatusCode == 200 {
-					err := json.Unmarshal([]byte(body), &list)
-					if err != nil {
-						log.Println(err.Error())
-						//json: Unmarshal(non-pointer main.Request)
-					}
-					imageList = append(imageList, list)
-				}
-			}
-		} else {
-			pages := pageCount(data.Count)
-			for i := 1; i <= pages; i++ {
-				events, body, errs := request.Clone().Get(csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name&page=" + strconv.Itoa(i)).End()
-				if errs != nil {
-					log.Println(events.StatusCode)
-				}
-				if events.StatusCode == 200 {
-					err := json.Unmarshal([]byte(body), &data)
-					if err != nil {
-						log.Println(err.Error())
-						//json: Unmarshal(non-pointer main.Request)
-					}
-
-					for _, result := range data.Result {
-						var list = ImageList{}
-						events, body, errs = request.Clone().Get(csp.url + "/api/v2/images?name=" + result.Name + "&page_size=" + strconv.Itoa(result.NumImages)).End()
-						if errs != nil {
-							log.Println(events.StatusCode)
-						}
-						if events.StatusCode == 200 {
-							err := json.Unmarshal([]byte(body), &list)
-							if err != nil {
-								log.Println(err.Error())
-								//json: Unmarshal(non-pointer main.Request)
-							}
-							imageList = append(imageList, list)
-						}
-					}
-				}
-			}
-		}
-
+	page++
+	if remaining <= 0 {
+		log.Printf("Processed all %v image scans!", repos.Count)
+	} else {
+		log.Printf("Remaining image scans to process: %v - Next page: %v", remaining, page)
 	}
+	log.Println("Sending scan results to next phase.")
 	return imageList
 }
 
