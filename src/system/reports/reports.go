@@ -12,7 +12,7 @@ import (
 )
 
 // WriteHTMLReport - Generates the HTML report
-func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulnerabilities, malw aqua.Malware, sens aqua.Sensitive) string {
+func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulnerabilities, malw aqua.Malware, sens aqua.Sensitive) (string, string) {
 	path := createHTMLFile(image, tag, ir.Registry)
 	w, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -47,11 +47,13 @@ func WriteHTMLReport(image, tag string, ir aqua.ImageRisk, vuln aqua.ImageVulner
 
 	str := fmt.Sprintf("Report for image: %s created successfully.", image+":"+tag)
 	log.Println(str)
-	return str
+	return str, path
 }
 
 func createHTMLFile(image, tag, registry string) string {
 	fileName := registry + "-" + strings.Replace(image, "/", "_", -1) + "-" + tag + ".html"
+	fileName = strings.ToLower(fileName)
+	fileName = strings.Replace(fileName, " ", "", -1)
 	err := os.Remove("reports/" + fileName)
 	if err != nil {
 		log.Println(err)

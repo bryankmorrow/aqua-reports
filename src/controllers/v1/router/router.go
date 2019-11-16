@@ -32,6 +32,7 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 		"/api/v1": {
 			Routes: routes.Routes{
 				routes.Route{Name: "Status", Method: "GET", Pattern: "/status", HandlerFunc: StatusHandler.Index},
+				routes.Route{Name: "ReportsAllStreams", Method: "GET", Pattern: "/reports/streams/all", HandlerFunc: ReportsHandler.AllStream},
 				routes.Route{Name: "ReportsAllParams", Method: "GET", Pattern: "/reports/all/{pagesize}/{page}", HandlerFunc: ReportsHandler.AllParams},
 				routes.Route{Name: "ReportsAll", Method: "GET", Pattern: "/reports/all", HandlerFunc: ReportsHandler.All},
 				routes.Route{Name: "Report", Method: "GET", Pattern: "/reports/{registry}/{image}/{tag}", HandlerFunc: ReportsHandler.One},

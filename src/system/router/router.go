@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	V1SubRoutes "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/router"
 
@@ -15,7 +17,7 @@ type Router struct {
 // Init - Initialize the router and get the route and subroutes
 func (r *Router) Init() {
 	r.Router.Use(Middleware)
-
+	r.Router.PathPrefix("/reports/").Handler(http.StripPrefix("/reports/", http.FileServer(http.Dir("reports"))))
 	baseRoutes := GetRoutes()
 	for _, route := range baseRoutes {
 		r.Router.
@@ -51,6 +53,5 @@ func (r *Router) AttachSubRouterWithMiddleware(path string, subroutes routes.Rou
 // NewRouter - return the router
 func NewRouter() (r Router) {
 	r.Router = mux.NewRouter().StrictSlash(true)
-
 	return
 }

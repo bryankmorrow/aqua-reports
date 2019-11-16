@@ -9,11 +9,11 @@ import (
 )
 
 // Return the remaining amount of repositories (images), the current page and the AllImages result
-func (csp *CSP) repositoryResult(pagesize, page int) (int, int, AllImages){
+func (csp *CSP) repositoryResult(pagesize, page int) (int, int, AllImages) {
 	var repos = AllImages{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
-	url := csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name&pagesize="+strconv.Itoa(pagesize)+"&page="+strconv.Itoa(page)
+	url := csp.url + "/api/v2/repositories?filter=&include_totals=true&order_by=name&pagesize=" + strconv.Itoa(pagesize) + "&page=" + strconv.Itoa(page)
 	events, body, errs := request.Clone().Get(url).End()
 	log.Printf("Querying /api/v2/repositories page number %v with a pagesize of %v", page, pagesize)
 	if errs != nil {

@@ -2,6 +2,7 @@ package reports
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -46,9 +47,9 @@ func One(w http.ResponseWriter, r *http.Request) {
 	sens := csp.GetImageSensitive(registry, image, tag)
 	malw := csp.GetImageMalware(registry, image, tag)
 	// Write HTML
-	resp := reports.WriteHTMLReport(image, tag, ir, vuln, malw, sens)
-
-	var response = ImageResponse{image, tag, registry, resp}
+	resp, path := reports.WriteHTMLReport(image, tag, ir, vuln, malw, sens)
+	url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+	var response = ImageResponse{image, tag, registry, url, resp}
 	responseList = append(responseList, response)
 
 	json.NewEncoder(w).Encode(responseList)

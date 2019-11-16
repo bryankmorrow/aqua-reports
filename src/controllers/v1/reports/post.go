@@ -2,6 +2,7 @@ package reports
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -28,8 +29,9 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		vuln := csp.GetImageVulnerabilities(image.Registry, image.Name, image.Tag)
 		sens := csp.GetImageSensitive(image.Registry, image.Name, image.Tag)
 		malw := csp.GetImageMalware(image.Registry, image.Name, image.Tag)
-		resp := reports.WriteHTMLReport(image.Name, image.Tag, ir, vuln, malw, sens)
-		var response = ImageResponse{image.Name, image.Tag, image.Registry, resp}
+		resp, path := reports.WriteHTMLReport(image.Name, image.Tag, ir, vuln, malw, sens)
+		url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+		var response = ImageResponse{image.Name, image.Tag, image.Registry, url, resp}
 		responseList = append(responseList, response)
 		i++
 	}

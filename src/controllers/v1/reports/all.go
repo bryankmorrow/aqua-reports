@@ -2,6 +2,7 @@ package reports
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -21,6 +22,7 @@ type ImageResponse struct {
 	Name        string `json:"image"`
 	Tag         string `json:"tag"`
 	Registry    string `json:"registry"`
+	URL         string `json:"url"`
 	WriteStatus string `json:"write-status,omitempty"`
 }
 
@@ -28,14 +30,12 @@ type ImageResponse struct {
 func All(w http.ResponseWriter, r *http.Request) {
 	defer Track(RunningTime("/reports/all"))
 	w.Header().Set("Content-Type", "application/json")
-	var irList ImageResponseList
 	var responseList []ImageResponse
 	i := 1
-
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
 
-	list := csp.GetAllImages("100", "1")
+	list, _, _ := csp.GetAllImages("100", "1")
 
 	for _, l := range list {
 		for _, v := range l.Result {
@@ -43,15 +43,14 @@ func All(w http.ResponseWriter, r *http.Request) {
 			vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
 			sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
 			malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
-			resp := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-			var response = ImageResponse{v.Repository, v.Tag, v.Registry, resp}
+			resp, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
+			url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+			var response = ImageResponse{v.Repository, v.Tag, v.Registry, url, resp}
 			responseList = append(responseList, response)
 			i++
 		}
 	}
-	irList.Count = i
-	irList.Response = responseList
-	_ = json.NewEncoder(w).Encode(irList)
+	_ = json.NewEncoder(w).Encode(responseList)
 }
 
 // RunningTime - Start the Timer

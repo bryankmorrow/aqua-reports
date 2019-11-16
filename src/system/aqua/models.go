@@ -157,9 +157,8 @@ type ImageRisk struct {
 			} `json:"custom_checks_failed,omitempty"`
 		} `json:"checks_performed"`
 	} `json:"assurance_results"`
-	ScanWarnings          []interface{} `json:"scan_warnings"`
-	PendingDisallowed     bool          `json:"pending_disallowed"`
-	MicroenforcerDetected bool          `json:"microenforcer_detected"`
+	PendingDisallowed     bool `json:"pending_disallowed"`
+	MicroenforcerDetected bool `json:"microenforcer_detected"`
 }
 
 //ImageVulnerabilities is derived from singular image vulnerability query
