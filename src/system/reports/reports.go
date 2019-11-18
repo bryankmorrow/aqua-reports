@@ -202,7 +202,7 @@ func writeHTMLRiskv2(inc string, ir aqua.ImageRisk, writer *bufio.Writer, w *os.
 			img := strings.Replace(scanner.Text(), "&&SCANDATE&&", ir.ScanDate.String(), 1)
 			writer.WriteString(img)
 		} else if strings.Contains(scanner.Text(), "&&CRITICAL&&") {
-			img := strings.Replace(scanner.Text(), "&&CRITICAL&&", strconv.Itoa(ir.VulnsFound), 1)
+			img := strings.Replace(scanner.Text(), "&&CRITICAL&&", strconv.Itoa(ir.CritVulns), 1)
 			writer.WriteString(img)
 		} else if strings.Contains(scanner.Text(), "&&HIGH&&") {
 			img := strings.Replace(scanner.Text(), "&&HIGH&&", strconv.Itoa(ir.HighVulns), 1)
