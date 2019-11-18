@@ -255,10 +255,11 @@ func writeHTMLVulnerability(vulns aqua.ImageVulnerabilities, writer *bufio.Write
 							</thead><tbody>`)
 	writer.WriteString(str)
 	for _, vuln := range vulns.Result {
+		resource := fmt.Sprintf("Name: %s - Version: %s", vuln.Resource.Name, vuln.Resource.Version)
 		str := fmt.Sprintf(`<tr><td><a href="%s" target="_blank">%s</a></td>
 							   <td>%s</td><td><span class="severity %s">%s</span></td>
 							   <td><span>%f</span></td>
-							   <td>%s</td></tr>`, vuln.VendorURL, vuln.Name, vuln.Resource, strings.ToLower(vuln.AquaSeverity), strings.ToLower(vuln.AquaSeverity), vuln.AquaScore, vuln.FixVersion)
+							   <td>%s</td></tr>`, vuln.VendorURL, vuln.Name, resource, strings.ToLower(vuln.AquaSeverity), strings.ToLower(vuln.AquaSeverity), vuln.AquaScore, vuln.FixVersion)
 		writer.WriteString(str)
 	}
 	writer.Flush()
