@@ -33,7 +33,7 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 	page := 1
 
 	list, imageCount, repoCount, _ := csp.GetAllImages(pagesize, page)
-	fmt.Fprintf(w, "Image Repository Count: %d - Total Image Count: %d - Pagesize (repos per query): %s\n", repoCount, imageCount, pagesize)
+	fmt.Fprintf(w, "Image Repository Count: %d - Total Image Count: %d - Pagesize (repos per query): %d\n", repoCount, imageCount, pagesize)
 	count := 0
 	if repoCount <= pagesize {
 		for _, l := range list {
