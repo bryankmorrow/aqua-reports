@@ -1,8 +1,6 @@
 package reports
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -28,29 +26,41 @@ type ImageResponse struct {
 
 // All - This is the HTTP Handler to display the HTML Report and JSON output
 func All(w http.ResponseWriter, r *http.Request) {
-	defer Track(RunningTime("/reports/all"))
-	w.Header().Set("Content-Type", "application/json")
-	var responseList []ImageResponse
-	i := 1
+
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
+	pagesize := 10
+	page := 1
 
-	list, _, _ := csp.GetAllImages("100", "1")
+	list, _, repoCount, remain := csp.GetAllImages(pagesize, page)
 
+	go CreateScanReport(csp, list, repoCount, remain, pagesize, page)
+	w.Write([]byte("Creating reports for all image repositories. Please check the application log for status"))
+}
+
+// CreateScanReport - iterates through the slice of ImageList
+// Call this using a go routine so it can parse all images
+// when greater than the pagesize
+func CreateScanReport(csp aqua.CSP, list []aqua.ImageList, repoCount, remain, pagesize, page int) {
+	defer Track(RunningTime("All Reports"))
+	i := 1
 	for _, l := range list {
 		for _, v := range l.Result {
 			ir := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
 			vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
 			sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
 			malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
-			resp, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-			url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
-			var response = ImageResponse{v.Repository, v.Tag, v.Registry, url, resp}
-			responseList = append(responseList, response)
+			_, _ = reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
+			// url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
 			i++
 		}
 	}
-	_ = json.NewEncoder(w).Encode(responseList)
+	if remain > 0 {
+		page++
+		log.Printf("Calling another round of repositories - Pagesize: %d - Next Page: %d", pagesize, page)
+		list, _, repoCount, remain = csp.GetAllImages(pagesize, page)
+		go CreateScanReport(csp, list, repoCount, remain, pagesize, page)
+	}
 }
 
 // RunningTime - Start the Timer

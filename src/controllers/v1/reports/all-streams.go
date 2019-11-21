@@ -29,15 +29,13 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
 
-	pagesize := "20"
-	page := "1"
-	ps, _ := strconv.Atoi(pagesize)
-	p, _ := strconv.Atoi(page)
+	pagesize := 100
+	page := 1
 
-	list, imageCount, repoCount := csp.GetAllImages(pagesize, page)
+	list, imageCount, repoCount, _ := csp.GetAllImages(pagesize, page)
 	fmt.Fprintf(w, "Image Repository Count: %d - Total Image Count: %d - Pagesize (repos per query): %s\n", repoCount, imageCount, pagesize)
 	count := 0
-	if repoCount <= ps {
+	if repoCount <= pagesize {
 		for _, l := range list {
 			for _, v := range l.Result {
 				count++
@@ -54,7 +52,7 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else {
-		log.Printf("Repository Page: %d", p)
+		log.Printf("Repository Page: %d", page)
 		for _, l := range list {
 			for _, v := range l.Result {
 				count++
@@ -71,11 +69,11 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		currentCount := repoCount - ps
+		currentCount := repoCount - pagesize
 		log.Println("Outside for loop currentCount: " + strconv.Itoa(currentCount))
-		if currentCount >= ps {
-			p++
-			log.Printf("Next Page: %d - Current Image Count: %d", p, currentCount)
+		if currentCount >= pagesize {
+			page++
+			log.Printf("Next Page: %d - Current Image Count: %d", page, currentCount)
 		}
 	}
 	fmt.Fprintf(w, "Finished scan report creation for %d images\n", count)

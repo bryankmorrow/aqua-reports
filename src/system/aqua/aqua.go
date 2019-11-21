@@ -47,11 +47,9 @@ func (csp *CSP) ConnectCSP() {
 }
 
 // GetAllImages - GET api/v2/repositories?filter=&include_totals=true&order_by=name&page=1&pagesize=100
-func (csp *CSP) GetAllImages(ps, p string) ([]ImageList, int, int) {
+func (csp *CSP) GetAllImages(pagesize, page int) ([]ImageList, int, int, int) {
 	imageCount := 0
 	var imageList []ImageList
-	page, _ := strconv.Atoi(p)
-	pagesize, _ := strconv.Atoi(ps)
 	remaining, page, repos := csp.repositoryResult(pagesize, page)
 	for _, result := range repos.Result {
 		scanResult := csp.imageScanResult(result.Registry, result.Name, result.NumImages)
@@ -59,14 +57,7 @@ func (csp *CSP) GetAllImages(ps, p string) ([]ImageList, int, int) {
 		imageCount = imageCount + result.NumImages
 	}
 
-	page++
-	if remaining <= 0 {
-		log.Printf("Processed all %v image scans from Aqua CSP API!", repos.Count)
-	} else {
-		log.Printf("Remaining image scans to process: %v - Next page: %v", remaining, page)
-	}
-	log.Println("Sending scan results to next phase.")
-	return imageList, imageCount, repos.Count
+	return imageList, imageCount, repos.Count, remaining
 }
 
 // GetImageRisk - GET the risk API
