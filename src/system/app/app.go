@@ -72,7 +72,7 @@ func (s *Server) Start() {
 	newServer := &http.Server{
 		Handler:      handler,
 		Addr:         "0.0.0.0" + s.port,
-		WriteTimeout: 10 * time.Minute,
+		WriteTimeout: 60 * time.Second,
 		ReadTimeout:  30 * time.Second,
 	}
 

@@ -29,7 +29,7 @@ func All(w http.ResponseWriter, r *http.Request) {
 
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
-	pagesize := 10
+	pagesize := 100
 	page := 1
 
 	list, _, repoCount, remain := csp.GetAllImages(pagesize, page)
