@@ -4,14 +4,20 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/parnurzeal/gorequest"
 )
 
+// Mode determines if command-line or container
 var Mode string
+
+// URL points to an instance of Aqua CSP
 var URL string
+
+// User is the Aqua CSP user accessing the API
 var User string
+
+// Password is the password for the above user
 var Password string
 
 // NewCSP - initialize the CSP
@@ -183,59 +189,17 @@ func (csp *CSP) AssuranceOverview() ResponseAssurance {
 			log.Println("func AssuranceOverview: " + err.Error())
 		}
 		response.Count = assurance.Count
-		if assurance.Count <= 50 {
-			for _, policy := range assurance.Result {
-				if policy.AssuranceType == "image" {
-					response.Image++
-				} else if policy.AssuranceType == "host" {
-					response.Host++
-				} else if policy.AssuranceType == "function" {
-					response.Function++
-				} else {
-					response.PCF++
-				}
-			}
-		} else {
-			pages := pageCount(assurance.Count)
-			for i := 1; i <= pages; i++ {
-				events, body, errs := request.Clone().Get(csp.url + "/api/v2/assurance_policy?identifiers_only=true&order_by=name&page=" + strconv.Itoa(i)).End()
-				if errs != nil {
-					log.Println(events.StatusCode)
-				}
-				if events.StatusCode == 200 {
-					err := json.Unmarshal([]byte(body), &assurance)
-					if err != nil {
-						log.Println("func AssuranceOverview: " + err.Error())
-					}
-					for _, policy := range assurance.Result {
-						if policy.AssuranceType == "image" {
-							response.Image++
-						} else if policy.AssuranceType == "host" {
-							response.Host++
-						} else if policy.AssuranceType == "function" {
-							response.Function++
-						} else {
-							response.PCF++
-						}
-					}
-				}
+		for _, policy := range assurance.Result {
+			if policy.AssuranceType == "image" {
+				response.Image++
+			} else if policy.AssuranceType == "host" {
+				response.Host++
+			} else if policy.AssuranceType == "function" {
+				response.Function++
+			} else {
+				response.PCF++
 			}
 		}
 	}
 	return response
-}
-
-// Internal Functions
-
-func pageCount(count int) int {
-	pages := 0
-	switch {
-	case count <= 50:
-		pages = 1
-	case count > 50 && count <= 100:
-		pages = 2
-	case count > 100 && count <= 150:
-		pages = 3
-	}
-	return pages
 }
