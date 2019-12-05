@@ -98,8 +98,14 @@ curl https://aquasec.example.com:8000/api/v1/reports/overview
 curl https://aquasec.example.com:8000/api/v1/reports/all
 ```
 
-## One Image
+## Stream All Images
+If your browser (Chrome) supports streaming, you can stream the report creation and follow the progress.
+```sh
+curl https://aquasec.example.com:8000/api/v1/reports/streams/all
+```
 
+## One Image
+This will have three parameters, {registry}/{image}/{tag}. The registry references the logical name assigned to the registry in Aqua.
 ```sh
 curl https://aquasec.example.com:8000/api/v1/reports/Docker%20FHub/centos/7
 ```
