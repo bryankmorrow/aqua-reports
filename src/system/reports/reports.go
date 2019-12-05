@@ -337,7 +337,7 @@ func getResourceFromVuln(vulns aqua.ImageVulnerabilities) map[string]ResourceRep
 }
 
 // WriteHTMLOverview - Create and write the executive dashboard
-func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers, assurance aqua.ResponseAssurance) {
+func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers, assurance aqua.ResponseAssurance, imageTrends aqua.ResponseTrends, vulnTrends aqua.ResponseTrends, containerTrends aqua.ResponseTrends) {
 	asset := "assets/overview.inc"
 	path := "reports/overview.html"
 	err := os.Remove(path)
@@ -473,4 +473,7 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 	writer.WriteString("</body></html>")
 	writer.Flush()
 	w.Close()
+	log.Println(imageTrends)
+	log.Println(vulnTrends)
+	log.Println(containerTrends)
 }

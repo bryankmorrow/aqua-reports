@@ -145,7 +145,7 @@ func (csp *CSP) GetImageMalware(registry, repo, tag string) Malware {
 }
 
 // GetExecutiveOverview - API call to get Aqua Dashboard information
-func (csp *CSP) GetExecutiveOverview() (ExecutiveOverview, Enforcers) {
+func (csp *CSP) GetExecutiveOverview() (ExecutiveOverview, Enforcers, ResponseTrends, ResponseTrends, ResponseTrends) {
 	var overview = ExecutiveOverview{}
 	var enforcers = Enforcers{}
 	request := gorequest.New()
@@ -160,6 +160,7 @@ func (csp *CSP) GetExecutiveOverview() (ExecutiveOverview, Enforcers) {
 			log.Println("func GetExecutiveOverview: " + err.Error())
 		}
 	}
+	//Enforcers
 	events, body, errs = request.Clone().Get(csp.url + "/api/v1/hosts?hosts=").End()
 	if errs != nil {
 		log.Println(events.StatusCode)
@@ -170,10 +171,14 @@ func (csp *CSP) GetExecutiveOverview() (ExecutiveOverview, Enforcers) {
 			log.Println("func GetExecutiveOverview->Enforcers: " + err.Error())
 		}
 	}
-	return overview, enforcers
+	containerTrends := csp.trendsResult("containers")
+	imageTrends := csp.trendsResult("images")
+	vulnTrends := csp.trendsResult("vulnerabilities")
+
+	return overview, enforcers, imageTrends, vulnTrends, containerTrends
 }
 
-// AssuranceOverview gets the count of each policy type
+// AssuranceOverview gets the count of each Assurance policy type
 func (csp *CSP) AssuranceOverview() ResponseAssurance {
 	var assurance = PolicyAssurance{}
 	var response = ResponseAssurance{}

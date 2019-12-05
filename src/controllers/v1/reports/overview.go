@@ -50,10 +50,10 @@ func Overview(w http.ResponseWriter, r *http.Request) {
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
 
-	overview, enforcers := csp.GetExecutiveOverview()
+	overview, enforcers, imageTrends, vulnTrends, containerTrends := csp.GetExecutiveOverview()
 	assurance := csp.AssuranceOverview()
 
-	reports.WriteHTMLOverview(overview, enforcers, assurance)
+	reports.WriteHTMLOverview(overview, enforcers, assurance, imageTrends, vulnTrends, containerTrends)
 
 	var response = OverviewResponse{}
 	response.Containers.Running = overview.RunningContainers.Total
