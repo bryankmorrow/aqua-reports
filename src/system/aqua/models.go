@@ -444,3 +444,14 @@ type ResponseAssurance struct {
 	Host     int
 	PCF      int
 }
+
+// ResponseTrends
+type ResponseTrends []struct {
+	Date     int `json:"date"`
+	Total    int `json:"total"`
+	Ok       int `json:"ok"`
+	High     int `json:"high"`
+	Medium   int `json:"medium"`
+	Low      int `json:"low"`
+	Critical int `json:"critical"`
+}

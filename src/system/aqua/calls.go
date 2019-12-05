@@ -48,3 +48,22 @@ func (csp *CSP) imageScanResult(registry, name string, pagesize int) ImageList {
 	}
 	return list
 }
+
+func (csp *CSP) trendsResult(trend string) ResponseTrends {
+	var response = ResponseTrends{}
+	request := gorequest.New()
+	request.Set("Authorization", "Bearer "+csp.token)
+	url := csp.url + "/api/v1/dashboard/" + trend + "/trends"
+	events, body, errs := request.Clone().Get(url).End()
+	if errs != nil {
+		log.Println(events.StatusCode)
+	}
+	if events.StatusCode == 200 {
+		err := json.Unmarshal([]byte(body), &response)
+		if err != nil {
+			log.Println(err.Error())
+			//json: Unmarshal(non-pointer main.Request)
+		}
+	}
+	return response
+}
