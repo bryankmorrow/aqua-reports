@@ -467,13 +467,28 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 				}
 					]
 				});
-			});
-		</script>`
+			});`
 	writer.WriteString(str)
-	writer.WriteString("</body></html>")
+	// charts
+	imageCrit := "var imageCrit = ["
+	imageHigh := "var imageHigh = ["
+	imageTotal := "var imageTotal = ["
+	for i, image := range imageTrends {
+		if i == len(imageTrends)-1 {
+			imageCrit = fmt.Sprintf("%s [%d, %d]", imageCrit, image.Date, image.Critical)
+			imageHigh = fmt.Sprintf("%s [%d, %d]", imageHigh, image.Date, image.High)
+			imageTotal = fmt.Sprintf("%s [%d, %d]", imageTotal, image.Date, image.Total)
+		} else {
+			imageCrit = fmt.Sprintf("%s [%d, %d],", imageCrit, image.Date, image.Critical)
+			imageHigh = fmt.Sprintf("%s [%d, %d],", imageHigh, image.Date, image.High)
+			imageTotal = fmt.Sprintf("%s [%d, %d],", imageTotal, image.Date, image.Total)
+		}
+	}
+	imageHigh = imageHigh + "]"
+	imageTotal = imageTotal + "]"
+	imageCrit = imageCrit + "]"
+
+	writer.WriteString("\n</script>\n</body>\n</html>")
 	writer.Flush()
 	w.Close()
-	log.Println(imageTrends)
-	log.Println(vulnTrends)
-	log.Println(containerTrends)
 }
