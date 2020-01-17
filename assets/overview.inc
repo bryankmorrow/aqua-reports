@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://aquademo.s3-us-west-2.amazonaws.com/report.css">
-    <link rel="stylesheet" href="https://aquademo.s3-us-west-2.amazonaws.com/overview.css">
+	<link rel="stylesheet" href="https://community-aqua-reports.s3.amazonaws.com/report.css">
+    <link rel="stylesheet" href="https://community-aqua-reports.s3.amazonaws.com/overview.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 
@@ -15,13 +15,13 @@
     <!-- <script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script> -->
 
         <!-- Flot -->
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.tooltip.min.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.spline.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.resize.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.pie.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/jquery.flot.symbol.js"></script>
-    <script src="https://aquademo.s3-us-west-2.amazonaws.com/flot/curvedLines.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.spline.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.resize.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.pie.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.symbol.js"></script>
+    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/curvedLines.js"></script>
     
     <title>Executive Overview - Aqua CSP</title>
 </head>
@@ -105,7 +105,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <div id="flot-containers"></div>
+                <div id="flot-containers" style="width:100%;height:300px;"></div>
             </div>
         </div>
 
@@ -140,7 +140,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <div id="flot-images"></div>
+                <div id="flot-images" style="width:100%;height:300px;"></div>
             </div>
         </div>
 
@@ -175,7 +175,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <div id="flot-vulnerabilities"></div>
+                <div id="flot-vulnerabilities" style="width:100%;height:300px;"></div>
             </div>
         </div>
     </div>

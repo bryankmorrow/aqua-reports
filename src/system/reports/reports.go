@@ -466,13 +466,12 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 				}
 				}
 					]
-				});
-			});`
+				});`
 	writer.WriteString(str)
 	// charts
-	imageCrit := "var imageCrit = ["
-	imageHigh := "var imageHigh = ["
-	imageTotal := "var imageTotal = ["
+	imageCrit := "var critical = ["
+	imageHigh := "var high = ["
+	imageTotal := "var total = ["
 	for i, image := range imageTrends {
 		if i == len(imageTrends)-1 {
 			imageCrit = fmt.Sprintf("%s [%d, %d]", imageCrit, image.Date, image.Critical)
@@ -487,8 +486,65 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 	imageHigh = imageHigh + "]"
 	imageTotal = imageTotal + "]"
 	imageCrit = imageCrit + "]"
-
+	imageTrendResponse := writeTrendChart("images", imageTotal, imageCrit, imageHigh)
+	writer.WriteString(imageTrendResponse)
 	writer.WriteString("\n</script>\n</body>\n</html>")
 	writer.Flush()
 	w.Close()
+}
+
+func writeTrendChart(trend, total, critical, high string) string {
+	result := "\n" + total + "\n" + critical + "\n" + high + "\n"
+	result = result + fmt.Sprintf(`
+		var data1 = [
+			{ label: "Total", data: total, color: '#17a084'},
+			{ label: "Critical", data: critical, color: '#127e68' },
+			{ label: "High", data: high, color: '#627e68' }
+		];
+
+		var options = {
+			series: {
+				stack: true,
+				lines: {
+					show: true,
+					fill: true
+				}
+			},
+			xaxis: {
+				mode: "time",
+				tickSize: [3, "day"],
+				tickLength: 10,
+				color: "black",
+				axisLabel: "Date",
+				axisLabelUseCanvas: true,
+				axisLabelFontSizePixels: 12,
+				axisLabelFontFamily: 'Verdana, Arial',
+				axisLabelPadding: 10
+			},
+			yaxis: {
+				color: "black",
+				axisLabel: "Images",
+				axisLabelUseCanvas: true,
+				axisLabelFontSizePixels: 12,
+				axisLabelFontFamily: 'Verdana, Arial',
+				axisLabelPadding: 3,
+				tickFormatter: function (v, axis) {
+					return $.formatNumber(v, { format: "#,###", locale: "us" });
+				}
+			},
+			grid: {
+				hoverable: true,
+				borderWidth: 2,        
+				backgroundColor: { colors: ["#EDF5FF", "#ffffff"] }
+			}
+		};
+
+		$.plot($("#flot-%s"), data1, options);
+
+		window.onresize = function(event) {
+			$.plot($("#flot-%s"), data1, options);
+		}
+
+	});`, trend, trend)
+	return result
 }
