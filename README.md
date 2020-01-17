@@ -81,39 +81,42 @@ export AQUA_REPORTS_PORT=<port for webserver>
 
 ```sh
 docker pull bkmorrow/aqua-reports:latest
-docker run --rm -v /tmp/reports:/go/src/github.com/BryanKMorrow/aqua-reports/reports -p 8000:8000 --env AQUA_URL=https://aquasec.example.com --env AQUA_USER=api --env AQUA_PASSWORD=password --env AQUA_REPORTS_PORT=8000 bkmorrow/aqua-reports:latest aqua-reports
+docker run --rm --name aqua-reports -v /tmp/reports:/go/src/github.com/BryanKMorrow/aqua-reports/reports -p 8000:8000 --env AQUA_URL=https://aquasec.example.com --env AQUA_USER=api --env AQUA_PASSWORD=password --env AQUA_REPORTS_PORT=8000 bkmorrow/aqua-reports:latest 
 ```
 
 # Examples
 
+To view the images you access the following directory on the container for a list of reports:
+`http://aqua-reports-container:8000/reports`
+
 ## Executive Overview
 
 ```sh
-curl https://aquasec.example.com:8000/api/v1/reports/overview
+curl https://aqua-reports-container:8000/api/v1/reports/overview
 ```
 
 ## All Images
 
 ```sh
-curl https://aquasec.example.com:8000/api/v1/reports/all
+curl https://aqua-reports-container:8000/api/v1/reports/all
 ```
 
 ## Stream All Images
 If your browser (Chrome) supports streaming, you can stream the report creation and follow the progress.
 ```sh
-curl https://aquasec.example.com:8000/api/v1/reports/streams/all
+curl https://aqua-reports-container:8000/api/v1/reports/streams/all
 ```
 
 ## One Image
 This will have three parameters, {registry}/{image}/{tag}. The registry references the logical name assigned to the registry in Aqua.
 ```sh
-curl https://aquasec.example.com:8000/api/v1/reports/Docker%20FHub/centos/7
+curl https://aqua-reports-container:8000/api/v1/reports/Docker%20FHub/centos/7
 ```
 
 ## List of Images
 
 ```sh
-curl -d '[{"image": "postgres","tag": "9.5","registry": "Docker Hub"},{"image": "alpine","tag": "3.7","registry": "Docker Hub"}]' -H "Content-Type: application/json" -X POST https://aquasec.example.com/api/v1/reports/images
+curl -d '[{"image": "postgres","tag": "9.5","registry": "Docker Hub"},{"image": "alpine","tag": "3.7","registry": "Docker Hub"}]' -H "Content-Type: application/json" -X POST https://aqua-reports-container/api/v1/reports/images
 ```
 
 # License
