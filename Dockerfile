@@ -1,5 +1,7 @@
 FROM golang:rc-alpine
 
+RUN apk update
+RUN apk upgrade
 RUN apk add --no-cache git
 
 RUN mkdir -p /go/src/github.com/BryanKMorrow/aqua-reports
