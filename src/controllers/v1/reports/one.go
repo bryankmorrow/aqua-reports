@@ -42,15 +42,20 @@ func One(w http.ResponseWriter, r *http.Request) {
 	csp := aqua.NewCSP()
 	csp.ConnectCSP()
 
-	ir := csp.GetImageRisk(registry, image, tag)
-	vuln := csp.GetImageVulnerabilities(registry, image, tag)
-	sens := csp.GetImageSensitive(registry, image, tag)
-	malw := csp.GetImageMalware(registry, image, tag)
-	// Write HTML
-	resp, path := reports.WriteHTMLReport(image, tag, ir, vuln, malw, sens)
-	url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
-	var response = ImageResponse{image, tag, registry, url, resp}
-	responseList = append(responseList, response)
+	ir, exists := csp.GetImageRisk(registry, image, tag)
+	if exists {
+		vuln := csp.GetImageVulnerabilities(registry, image, tag)
+		sens := csp.GetImageSensitive(registry, image, tag)
+		malw := csp.GetImageMalware(registry, image, tag)
+		// Write HTML
+		resp, path := reports.WriteHTMLReport(image, tag, ir, vuln, malw, sens)
+		url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+		var response = ImageResponse{image, tag, registry, url, resp}
+		responseList = append(responseList, response)
 
-	json.NewEncoder(w).Encode(responseList)
+		json.NewEncoder(w).Encode(responseList)
+	} else {
+		var response = ImageResponse{image, tag, registry, "", "NOT FOUND"}
+		json.NewEncoder(w).Encode(response)
+	}
 }

@@ -46,13 +46,15 @@ func CreateScanReport(csp aqua.CSP, list []aqua.ImageList, repoCount, remain, pa
 	i := 1
 	for _, l := range list {
 		for _, v := range l.Result {
-			ir := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
-			vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
-			sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
-			malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
-			_, _ = reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-			// url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
-			i++
+			ir, exists := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
+			if exists {
+				vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
+				sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
+				malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
+				_, _ = reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
+				// url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+				i++
+			}
 		}
 	}
 	if remain > 0 {

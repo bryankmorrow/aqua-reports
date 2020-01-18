@@ -67,7 +67,8 @@ func (csp *CSP) GetAllImages(pagesize, page int) ([]ImageList, int, int, int) {
 }
 
 // GetImageRisk - GET the risk API
-func (csp *CSP) GetImageRisk(registry, repo, tag string) ImageRisk {
+func (csp *CSP) GetImageRisk(registry, repo, tag string) (ImageRisk, bool) {
+	exists := true
 	var ir = ImageRisk{}
 	request := gorequest.New()
 	request.Set("Authorization", "Bearer "+csp.token)
@@ -81,8 +82,12 @@ func (csp *CSP) GetImageRisk(registry, repo, tag string) ImageRisk {
 			log.Println("func imageRisk: " + err.Error())
 			//json: Unmarshal(non-pointer main.Request)
 		}
+	} else if events.StatusCode != 200 {
+		log.Printf("%s/%s:%s not found in Aqua CSP.", registry, repo, tag)
+		exists = false
 	}
-	return ir
+
+	return ir, exists
 }
 
 // GetImageVulnerabilities - GET the vulnerabilities API

@@ -39,16 +39,17 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 		for _, l := range list {
 			for _, v := range l.Result {
 				count++
-				ir := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
-				vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
-				sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
-				malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
-				_, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-				url := fmt.Sprintf("http://%s/%s", r.Host, path)
-				fmt.Fprintf(w, "Image scan report completed for %s -  %d of %d images (%d%%) - total time elapsed: %v\n",
-					url, count, imageCount, count*100/imageCount, time.Since(start).Truncate(time.Millisecond))
-				flusher.Flush()
-
+				ir, exists := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
+				if exists {
+					vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
+					sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
+					malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
+					_, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
+					url := fmt.Sprintf("http://%s/%s", r.Host, path)
+					fmt.Fprintf(w, "Image scan report completed for %s -  %d of %d images (%d%%) - total time elapsed: %v\n",
+						url, count, imageCount, count*100/imageCount, time.Since(start).Truncate(time.Millisecond))
+					flusher.Flush()
+				}
 			}
 		}
 	} else {
@@ -56,16 +57,17 @@ func AllStream(w http.ResponseWriter, r *http.Request) {
 		for _, l := range list {
 			for _, v := range l.Result {
 				count++
-				ir := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
-				vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
-				sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
-				malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
-				_, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-				url := fmt.Sprintf("http://%s/%s", r.Host, path)
-				fmt.Fprintf(w, "Image scan report completed for %s -  %d of %d images (%d%%) - total time elapsed: %v\n",
-					url, count, imageCount, count*100/imageCount, time.Since(start).Truncate(time.Millisecond))
-				flusher.Flush()
-
+				ir, exists := csp.GetImageRisk(v.Registry, v.Repository, v.Tag)
+				if exists {
+					vuln := csp.GetImageVulnerabilities(v.Registry, v.Repository, v.Tag)
+					sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
+					malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
+					_, path := reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
+					url := fmt.Sprintf("http://%s/%s", r.Host, path)
+					fmt.Fprintf(w, "Image scan report completed for %s -  %d of %d images (%d%%) - total time elapsed: %v\n",
+						url, count, imageCount, count*100/imageCount, time.Since(start).Truncate(time.Millisecond))
+					flusher.Flush()
+				}
 			}
 		}
 

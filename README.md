@@ -110,7 +110,7 @@ curl https://aqua-reports-container:8000/api/v1/reports/streams/all
 ## One Image
 This will have three parameters, {registry}/{image}/{tag}. The registry references the logical name assigned to the registry in Aqua.
 ```sh
-curl https://aqua-reports-container:8000/api/v1/reports/Docker%20FHub/centos/7
+curl https://aqua-reports-container:8000/api/v1/reports/Docker%20Hub/centos/7
 ```
 
 ## List of Images
