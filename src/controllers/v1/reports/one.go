@@ -49,7 +49,7 @@ func One(w http.ResponseWriter, r *http.Request) {
 		malw := csp.GetImageMalware(registry, image, tag)
 		// Write HTML
 		resp, path := reports.WriteHTMLReport(image, tag, ir, vuln, malw, sens)
-		url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+		url := fmt.Sprintf("http://%s/%s", r.Host, path)
 		var response = ImageResponse{image, tag, registry, url, resp}
 		responseList = append(responseList, response)
 

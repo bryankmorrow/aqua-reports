@@ -52,7 +52,6 @@ func CreateScanReport(csp aqua.CSP, list []aqua.ImageList, repoCount, remain, pa
 				sens := csp.GetImageSensitive(v.Registry, v.Repository, v.Tag)
 				malw := csp.GetImageMalware(v.Registry, v.Repository, v.Tag)
 				_, _ = reports.WriteHTMLReport(ir.Repository, ir.Tag, ir, vuln, malw, sens)
-				// url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
 				i++
 			}
 		}

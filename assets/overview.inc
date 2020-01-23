@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://community-aqua-reports.s3.amazonaws.com/report.css">
+    <link rel="stylesheet" href="https://community-aqua-reports.s3.amazonaws.com/report.css">
     <link rel="stylesheet" href="https://community-aqua-reports.s3.amazonaws.com/overview.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 
@@ -14,7 +14,7 @@
 	<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <!-- <script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script> -->
 
-        <!-- Flot -->
+    <!-- Flot -->
     <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.js"></script>
     <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.tooltip.min.js"></script>
     <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.spline.js"></script>

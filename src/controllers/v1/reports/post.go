@@ -31,7 +31,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 			sens := csp.GetImageSensitive(image.Registry, image.Name, image.Tag)
 			malw := csp.GetImageMalware(image.Registry, image.Name, image.Tag)
 			resp, path := reports.WriteHTMLReport(image.Name, image.Tag, ir, vuln, malw, sens)
-			url := fmt.Sprintf("http://%s/reports/%s", r.Host, path)
+			url := fmt.Sprintf("http://%s/%s", r.Host, path)
 			var response = ImageResponse{image.Name, image.Tag, image.Registry, url, resp}
 			responseList = append(responseList, response)
 			i++
