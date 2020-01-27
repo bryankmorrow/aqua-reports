@@ -22,7 +22,7 @@
   - [All Images](#all-images)
   - [One Image](#one-image)
   - [List of Images](#list-images)
-  - [Troubleshooting and Support](#troubleshooting-support)
+  - [Troubleshooting and Support](#troubleshooting-and-support)
   - [Disclaimer](#disclaimer)
 
 # Abstract
