@@ -22,10 +22,14 @@
   - [All Images](#all-images)
   - [One Image](#one-image)
   - [List of Images](#list-images)
+  - [Troubleshooting and Support](#troubleshooting-support)
+  - [Disclaimer](#disclaimer)
 
 # Abstract
 
 `Aqua Reports` is a basic API server that provides reports for the Aqua Security Cloud Native Security Platform (CSP). `Aqua Reports` does this by pulling information directly from the Aqua CSP API.  
+
+> _Aqua Reports is compatible with Aqua Cloud Native Security Platform 4.5+_
 
 # Features
 
@@ -126,3 +130,11 @@ This repository is available under the [GNU Affero General Public License v3.0](
 # Author
 
 [Bryan Morrow](https://github.com/BryanKMorrow) (BryanKMorrow)  
+
+# Troubleshooting and Support
+
+**For support and questions please contact us at - community.plugins@aquasec.com.**
+
+# Disclaimer
+
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
