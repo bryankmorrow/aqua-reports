@@ -156,6 +156,19 @@ legend{
     max-width:100%;
     white-space:normal
 }
+.legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 .resources,.resources .more-info{
     display:none
 }
@@ -356,7 +369,6 @@ label.data-item{
 }
 body,html{
     max-height:100%;
-    overflow:hidden;
     font-family:"Lucida Grande","Lucida Sans",Arial,sans-serif;
     color:#464547
 }
@@ -385,9 +397,8 @@ body,html{
     margin-left:10px
 }
 .content{
-    margin:30px;
+    margin:15px;
     background:#fff;
-    height:calc(100vh - 110px)
 }
 .tabs{
     display:flex;

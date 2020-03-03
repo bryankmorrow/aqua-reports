@@ -477,10 +477,10 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 					]
 				});`
 	writer.WriteString(str)
-	// charts
-	imageCrit := "var critical = ["
-	imageHigh := "var high = ["
-	imageTotal := "var total = ["
+	// image chart
+	imageCrit := "var imagesCritical = ["
+	imageHigh := "var imagesHigh = ["
+	imageTotal := "var imagesTotal = ["
 	for i, image := range imageTrends {
 		if i == len(imageTrends)-1 {
 			imageCrit = fmt.Sprintf("%s [%d, %d]", imageCrit, image.Date, image.Critical)
@@ -505,55 +505,55 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 func writeTrendChart(trend, total, critical, high string) string {
 	result := "\n" + total + "\n" + critical + "\n" + high + "\n"
 	result = result + fmt.Sprintf(`
-		var data1 = [
-			{ label: "Total", data: total, color: '#17a084'},
-			{ label: "Critical", data: critical, color: '#127e68' },
-			{ label: "High", data: high, color: '#627e68' }
+		var dataset = [
+			{
+				data: %sTotal,
+				color: "#506e90",
+				points: { fillColor: "#506e90", show: true },
+				lines: { show: true, fill: true}
+			},
+			{
+				data: %sCritical,
+				color: "#820040",
+				points: { fillColor: "#820040", show: true },
+				lines: { show: true, fill: true }
+			},
+			{
+				data: %sHigh,
+				color: "#d90000",
+				points: { fillColor: "#d90000", show: true },
+				lines: { show: true, fill: true }
+			}
 		];
 
 		var options = {
-			series: {
-				stack: true,
-				lines: {
-					show: true,
-					fill: true
-				}
+			xaxis: { 
+					position: 'bottom', 
+					showTickLabels: 'none',
+					mode: "time", 
+					minTickSize: [1, "day"],
+					timeBase: "milliseconds"
 			},
-			xaxis: {
-				mode: "time",
-				tickSize: [3, "day"],
-				tickLength: 10,
-				color: "black",
-				axisLabel: "Date",
-				axisLabelUseCanvas: true,
-				axisLabelFontSizePixels: 12,
-				axisLabelFontFamily: 'Verdana, Arial',
-				axisLabelPadding: 10
+			yaxis: { 
+					position: 'left', 
+					showTickLabels: 'none'
 			},
-			yaxis: {
-				color: "black",
-				axisLabel: "Images",
-				axisLabelUseCanvas: true,
-				axisLabelFontSizePixels: 12,
-				axisLabelFontFamily: 'Verdana, Arial',
-				axisLabelPadding: 3,
-				tickFormatter: function (v, axis) {
-					return $.formatNumber(v, { format: "#,###", locale: "us" });
-				}
+			legend: {
+				show: true
 			},
 			grid: {
 				hoverable: true,
-				borderWidth: 2,        
-				backgroundColor: { colors: ["#EDF5FF", "#ffffff"] }
+				borderWidth: 1,
+				backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
 			}
 		};
 
-		$.plot($("#flot-%s"), data1, options);
+		$.plot($("#flot-%s"), dataset, options);
 
 		window.onresize = function(event) {
-			$.plot($("#flot-%s"), data1, options);
+			$.plot($("#flot-%s"), dataset, options);
 		}
 
-	});`, trend, trend)
+	});`, trend, trend, trend, trend, trend)
 	return result
 }

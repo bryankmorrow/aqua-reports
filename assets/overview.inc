@@ -15,13 +15,14 @@
     <!-- <script src="https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script> -->
 
     <!-- Flot -->
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.tooltip.min.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.spline.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.resize.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.pie.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.symbol.js"></script>
-    <script src="https://community-aqua-reports.s3.amazonaws.com/flot/curvedLines.js"></script>
+    <script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.canvaswrapper.js"></script>
+	<script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.colorhelpers.js"></script>
+    <script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.js"></script>    
+    <script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.saturated.js"></script>
+	<script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.browser.js"></script>
+	<script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.drawSeries.js"></script>
+	<script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.uiConstants.js"></script>
+	<script language="javascript" type="text/javascript" src="https://community-aqua-reports.s3.amazonaws.com/flot/jquery.flot.time.js"></script>
     
     <title>Executive Overview - Aqua CSP</title>
 </head>
@@ -140,7 +141,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <!-- <div id="flot-images" style="width:100%;height:300px;"></div> -->
+                <div id="flot-images" style="width:100%;height:300px;"></div>
             </div>
         </div>
 
