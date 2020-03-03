@@ -106,7 +106,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <!-- <div id="flot-containers" style="width:100%;height:300px;"></div> -->
+                <div id="flot-containers" style="width:100%;height:300px;"></div>
             </div>
         </div>
 
@@ -176,7 +176,7 @@
                         </div> <!-- end of second row (flex border-bottom mb-s) -->    
                     </div>  
                 </div>
-                <!-- <div id="flot-vulnerabilities" style="width:100%;height:300px;"></div> -->
+                <div id="flot-vulnerabilities" style="width:100%;height:300px;"></div>
             </div>
         </div>
     </div>

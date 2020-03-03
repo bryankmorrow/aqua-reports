@@ -497,7 +497,47 @@ func WriteHTMLOverview(overview aqua.ExecutiveOverview, enforcers aqua.Enforcers
 	imageCrit = imageCrit + "]"
 	imageTrendResponse := writeTrendChart("images", imageTotal, imageCrit, imageHigh)
 	writer.WriteString(imageTrendResponse)
-	writer.WriteString("\n</script>\n</body>\n</html>")
+	// container chart
+	containerTotal := "\tvar containersTotal = ["
+	containerCritical := "\tvar containersCritical = ["
+	containerHigh := "\tvar containersHigh = ["
+	for i, container := range containerTrends {
+		if i == len(containerTrends)-1 {
+			containerTotal = fmt.Sprintf("%s [%d, %d]", containerTotal, container.Date, container.Total)
+			containerCritical = fmt.Sprintf("%s [%d, %d]", containerCritical, container.Date, container.Critical)
+			containerHigh = fmt.Sprintf("%s [%d, %d]", containerHigh, container.Date, container.High)
+		} else {
+			containerTotal = fmt.Sprintf("%s [%d, %d],", containerTotal, container.Date, container.Total)
+			containerCritical = fmt.Sprintf("%s [%d, %d],", containerCritical, container.Date, container.Critical)
+			containerHigh = fmt.Sprintf("%s [%d, %d],", containerHigh, container.Date, container.High)
+		}
+	}
+	containerHigh = containerHigh + "]"
+	containerTotal = containerTotal + "]"
+	containerCritical = containerCritical + "]"
+	containerTrendResponse := writeTrendChart("containers", containerTotal, containerCritical, containerHigh)
+	writer.WriteString(containerTrendResponse)
+	// vulnerability chart
+	vulnTotal := "\tvar vulnerabilitiesTotal = ["
+	vulnCritical := "\tvar vulnerabilitiesCritical = ["
+	vulnHigh := "\tvar vulnerabilitiesHigh = ["
+	for i, vuln := range vulnTrends {
+		if i == len(vulnTrends)-1 {
+			vulnTotal = fmt.Sprintf("%s [%d, %d]", vulnTotal, vuln.Date, vuln.Total)
+			vulnCritical = fmt.Sprintf("%s [%d, %d]", vulnCritical, vuln.Date, vuln.Critical)
+			vulnHigh = fmt.Sprintf("%s [%d, %d]", vulnHigh, vuln.Date, vuln.High)
+		} else {
+			vulnTotal = fmt.Sprintf("%s [%d, %d],", vulnTotal, vuln.Date, vuln.Total)
+			vulnCritical = fmt.Sprintf("%s [%d, %d],", vulnCritical, vuln.Date, vuln.Critical)
+			vulnHigh = fmt.Sprintf("%s [%d, %d],", vulnHigh, vuln.Date, vuln.High)
+		}
+	}
+	vulnHigh = vulnHigh + "]"
+	vulnTotal = vulnTotal + "]"
+	vulnCritical = vulnCritical + "]"
+	vulnTrendResponse := writeTrendChart("vulnerabilities", vulnTotal, vulnCritical, vulnHigh)
+	writer.WriteString(vulnTrendResponse)
+	writer.WriteString("});\n</script>\n</body>\n</html>")
 	writer.Flush()
 	w.Close()
 }
@@ -552,8 +592,6 @@ func writeTrendChart(trend, total, critical, high string) string {
 
 		window.onresize = function(event) {
 			$.plot($("#flot-%s"), dataset, options);
-		}
-
-	});`, trend, trend, trend, trend, trend)
+		}`, trend, trend, trend, trend, trend)
 	return result
 }
