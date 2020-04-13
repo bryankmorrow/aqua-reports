@@ -2,7 +2,6 @@ package reports
 
 import (
 	"log"
-	"net/http"
 	"net/url"
 	"os"
 	"time"
@@ -24,7 +23,14 @@ var Password string
 
 // Reports represents all reports
 type Reports interface {
-	Get(w http.ResponseWriter, r *http.Request)
+	Get(params map[string]string, queue chan Response) Response
+}
+
+// Response for returning JSON to browser per request
+type Response struct {
+	Message string `json:"message"`
+	URL     string `json:"url,omitempty"`
+	Status  string `json:"status"`
 }
 
 // GetClient returns the aqua-sdk-go client to interact with CSP

@@ -1,26 +1,16 @@
 package router
 
 import (
-	"log"
-	"net/http"
-
 	ImageHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/images"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
 	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
+	"net/http"
 )
 
-// Middleware - Handler to check for authentication
+// Middleware - Handler
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		/* token := r.Header.Get("X-App-Token")
-		if len(token) < 1 {
-			http.Error(w, "Not authorized", http.StatusUnauthorized)
-			return
-		} */
-
-		log.Println("Inside V1 Middleware")
-
 		next.ServeHTTP(w, r)
 	})
 }
@@ -44,7 +34,8 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 		},
 		"/api/v2": {
 			Routes: routes.Routes{
-				routes.Route{Name: "ImageReport", Method: "GET", Pattern: "/reports/{registry}/{image}/{tag}", HandlerFunc: ImageHandler.Handler},
+				routes.Route{Name: "ImageReport", Method: "GET", Pattern: "/reports/scans/{image:.*}", HandlerFunc: ImageHandler.ImageHandler},
+				routes.Route{Name: "AllImagesReport", Method: "GET", Pattern: "/reports/scans", HandlerFunc: ImageHandler.ImagesHandler},
 			},
 			Middleware: Middleware,
 		},
