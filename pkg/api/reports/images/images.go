@@ -23,6 +23,10 @@ func ImagesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// Get - creates reports for all images in all registries
+// Param: map[string]string - Map of request parameters
+// Param: chan reports.Response - Channel that accepts the JSON response from each image
+// Return: reports.Response - the Json response sent to the requester
 func (il *Images) Get(params map[string]string, queue chan reports.Response) reports.Response {
 	defer reports.Track(reports.RunningTime("images.Get"))
 	var remaining, total, next int

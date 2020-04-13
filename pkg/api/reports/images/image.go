@@ -26,6 +26,8 @@ type Image struct {
 }
 
 // ImageHandler needs to handle the incoming request and execute the proper Image call
+// Param: http.ResponseWriter - writer to send back to requester
+// Param: *http.Request - request
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	var image Image
 	// Get the registry, image and tag from the path parameters
@@ -57,8 +59,9 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get - single image risk report
-// Param: http.ResponseWriter - writer to send back to requester
-// Param: *http.Request - request
+// Param: map[string]string - Map of request parameters
+// Param: chan reports.Response - Channel that accepts the JSON response from each image
+// Return: reports.Response - the Json response sent to the requester
 func (i *Image) Get(params map[string]string, queue chan reports.Response) reports.Response {
 	defer reports.Track(reports.RunningTime("image.Get"))
 	var err error
@@ -114,6 +117,12 @@ func (i *Image) Get(params map[string]string, queue chan reports.Response) repor
 	return response
 }
 
+// Template - generates the static HTML for the image scan report
+// Param: risk -  JSON to insert into template
+// Param: vulnerabilities -  JSON to insert into template
+// Param: sensitive -  JSON to insert into template
+// Param: malware -  JSON to insert into template
+// Return: string - HTML to create file
 func (i *Image) Template(risk, vulnerabilities, sensitive, malware string) string {
 	template := `<!DOCTYPE html>
 		<html lang="en">
