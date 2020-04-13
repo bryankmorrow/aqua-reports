@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/BryanKMorrow/aqua-sdk-go/client"
@@ -62,6 +63,20 @@ func UnescapeURLQuery(params map[string]string) {
 		}
 		params[k] = value
 	}
+}
+
+// CreateImageFile - the HTML File for the scan report
+func CreateImageFile(registry, image, tag string) string {
+	fileName := registry + "-" + strings.Replace(image, "/", "_", -1) + "-" + tag + ".html"
+	fileName = strings.ToLower(fileName)
+	fileName = strings.Replace(fileName, " ", "", -1)
+	err := os.Remove("reports/" + fileName)
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Printf("Previous report for image: %s deleted successfully \n", image)
+	}
+	return "reports/" + fileName
 }
 
 // RunningTime - Start the Timer
