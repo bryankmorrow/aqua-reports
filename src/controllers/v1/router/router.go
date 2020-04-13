@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	ImageHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/images"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
 	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
@@ -38,6 +39,12 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 				routes.Route{Name: "Report", Method: "GET", Pattern: "/reports/{registry}/{image}/{tag}", HandlerFunc: ReportsHandler.One},
 				routes.Route{Name: "Reports", Method: "POST", Pattern: "/reports/images", HandlerFunc: ReportsHandler.Post},
 				routes.Route{Name: "ExecutiveOverview", Method: "GET", Pattern: "/reports/overview", HandlerFunc: ReportsHandler.Overview},
+			},
+			Middleware: Middleware,
+		},
+		"/api/v2": {
+			Routes: routes.Routes{
+				routes.Route{Name: "ImageReport", Method: "GET", Pattern: "/reports/{registry}/{image}/{tag}", HandlerFunc: ImageHandler.Handler},
 			},
 			Middleware: Middleware,
 		},

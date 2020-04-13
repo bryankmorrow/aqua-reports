@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/BryanKMorrow/aqua-reports/pkg/api/reports"
 	"github.com/BryanKMorrow/aqua-reports/src/system/app"
 	"github.com/BryanKMorrow/aqua-reports/src/system/aqua"
 )
@@ -18,10 +19,16 @@ func main() {
 		if fatal {
 			log.Fatalln("Command line arguments are not set, stopping aqua-reports")
 		}
+		// version 1
 		aqua.Mode = app.ModeFlag
 		aqua.URL = app.URLFlag
 		aqua.User = app.UserFlag
 		aqua.Password = app.PasswordFlag
+		// version 2
+		reports.Mode = app.ModeFlag
+		reports.URL = app.URLFlag
+		reports.User = app.UserFlag
+		reports.Password = app.PasswordFlag
 		port = strconv.Itoa(app.PortFlag)
 	} else if app.ModeFlag == "container" {
 		log.Println("Using the environment variables")
