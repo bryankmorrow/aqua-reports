@@ -64,7 +64,6 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 		var imageList []images.ImageFinding
 		q := make(chan images.ImageFinding)
 		for _, i := range il.Result {
-			log.Println("Launching go routine ProcessImage")
 			go f.ProcessImage(cli, r, i, q, cl)
 		}
 		queueCount := 1
@@ -152,6 +151,12 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 	return response
 }
 
+// ProcessImage creates an ImageFinding object and sends it to the channel
+// Param: cli: *client.Client - The client from aqua-sdk-go
+// Param: r: RegistryFinding - The current registry
+// Param: i: SingleResponse - The image response object from the client
+// Param: q: chan ImageFinding - The queue that receives the ImageFinding object
+// Param: cl: Containers - This slice of containers to map is_running
 func (f Finding) ProcessImage(cli *client.Client, r registries.RegistryFinding, i imagessdk.SingleResponse, q chan images.ImageFinding, cl containers.Containers) {
 	r.CritVulns = r.CritVulns + i.CritVulns
 	r.HighVulns = r.HighVulns + i.HighVulns
