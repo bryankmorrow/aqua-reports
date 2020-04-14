@@ -28,7 +28,8 @@ func FindingHandler(w http.ResponseWriter, r *http.Request) {
 	var finding Finding
 	params := make(map[string]string)
 	params["path"] = r.Host
-	response := finding.Get(params, nil)
+	queue := make(chan reports.Response)
+	response := finding.Get(params, queue)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -61,53 +62,18 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 		il, _, _, _ := cli.GetAllImages(0, 1000, params, nil)
 		r.ImageCount = il.Count
 		var imageList []images.ImageFinding
+		q := make(chan images.ImageFinding)
 		for _, i := range il.Result {
-			r.CritVulns = r.CritVulns + i.CritVulns
-			r.HighVulns = r.HighVulns + i.HighVulns
-			r.MedVulns = r.MedVulns + i.MedVulns
-			r.LowVulns = r.LowVulns + i.LowVulns
-			r.TotalVulns = r.TotalVulns + i.VulnsFound
-			r.SensitiveData = r.SensitiveData + r.SensitiveData
-			r.Malware = r.Malware + r.Malware
-			var img images.ImageFinding
-			img.Registry = i.Registry
-			img.Name = i.Name
-			img.VulnsFound = i.VulnsFound
-			img.CritVulns = i.CritVulns
-			img.HighVulns = i.HighVulns
-			img.MedVulns = i.MedVulns
-			img.LowVulns = i.LowVulns
-			img.NegVulns = i.NegVulns
-			img.FixableVulns = 0
-			img.Repository = i.Repository
-			img.Tag = i.Tag
-			img.Created = i.Created
-			img.Author = i.Author
-			img.Digest = i.Digest
-			img.Size = i.Size
-			img.Os = i.Os
-			img.OsVersion = i.OsVersion
-			img.ScanStatus = i.ScanStatus
-			img.ScanDate = i.ScanDate
-			img.ScanError = i.ScanError
-			img.SensitiveData = i.SensitiveData
-			img.Malware = i.Malware
-			img.Disallowed = i.Disallowed
-			img.Whitelisted = i.Whitelisted
-			img.Blacklisted = i.Blacklisted
-			img.PartialResults = i.PartialResults
-			img.NewerImageExists = i.NewerImageExists
-			img.PendingDisallowed = i.PendingDisallowed
-			img.MicroenforcerDetected = i.MicroenforcerDetected
-			img.FixableVulns = GetFixableVulnCount(cli, img)
-			img.Running = MapContainerToImage(cl, img)
-			hl := GetScanHistory(cli, img.Registry, img.Repository, img.Tag)
-			// Sort the scan history
-			sort.Slice(hl, func(i, j int) bool {
-				return hl[i].Date.Before(hl[j].Date)
-			})
-			img.ScanHistory = hl
+			log.Println("Launching go routine ProcessImage")
+			go f.ProcessImage(cli, r, i, q, cl)
+		}
+		queueCount := 1
+		for img := range q {
 			imageList = append(imageList, img)
+			if queueCount == il.Count {
+				close(q)
+			}
+			queueCount++
 		}
 		r.Images = imageList
 		registryList = append(registryList, r)
@@ -184,6 +150,57 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 		Status:  "Write Successful",
 	}
 	return response
+}
+
+func (f Finding) ProcessImage(cli *client.Client, r registries.RegistryFinding, i imagessdk.SingleResponse, q chan images.ImageFinding, cl containers.Containers) {
+	r.CritVulns = r.CritVulns + i.CritVulns
+	r.HighVulns = r.HighVulns + i.HighVulns
+	r.MedVulns = r.MedVulns + i.MedVulns
+	r.LowVulns = r.LowVulns + i.LowVulns
+	r.TotalVulns = r.TotalVulns + i.VulnsFound
+	r.SensitiveData = r.SensitiveData + r.SensitiveData
+	r.Malware = r.Malware + r.Malware
+	var img images.ImageFinding
+	img.Registry = i.Registry
+	img.Name = i.Name
+	img.VulnsFound = i.VulnsFound
+	img.CritVulns = i.CritVulns
+	img.HighVulns = i.HighVulns
+	img.MedVulns = i.MedVulns
+	img.LowVulns = i.LowVulns
+	img.NegVulns = i.NegVulns
+	img.FixableVulns = 0
+	img.Repository = i.Repository
+	img.Tag = i.Tag
+	img.Created = i.Created
+	img.Author = i.Author
+	img.Digest = i.Digest
+	img.Size = i.Size
+	img.Os = i.Os
+	img.OsVersion = i.OsVersion
+	img.ScanStatus = i.ScanStatus
+	img.ScanDate = i.ScanDate
+	img.ScanError = i.ScanError
+	img.SensitiveData = i.SensitiveData
+	img.Malware = i.Malware
+	img.Disallowed = i.Disallowed
+	img.Whitelisted = i.Whitelisted
+	img.Blacklisted = i.Blacklisted
+	img.PartialResults = i.PartialResults
+	img.NewerImageExists = i.NewerImageExists
+	img.PendingDisallowed = i.PendingDisallowed
+	img.MicroenforcerDetected = i.MicroenforcerDetected
+	img.FixableVulns = GetFixableVulnCount(cli, img)
+	img.Running = MapContainerToImage(cl, img)
+	hl := GetScanHistory(cli, img.Registry, img.Repository, img.Tag)
+	// Sort the scan history
+	sort.Slice(hl, func(i, j int) bool {
+		return hl[i].Date.Before(hl[j].Date)
+	})
+	img.ScanHistory = hl
+	if q != nil {
+		q <- img
+	}
 }
 
 func GetFixableVulnCount(cli *client.Client, i images.ImageFinding) int {

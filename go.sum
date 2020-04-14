@@ -1,5 +1,7 @@
 github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200411231552-5741b20a9c41 h1:Z/xKFrjY0nmx00bv5uh/3jLBA/ALeDTNNCmqnaHTnzw=
 github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200411231552-5741b20a9c41/go.mod h1:dR5GOFs7tjVFc95sYSED+F/ccbm6WUBvzb+Atpca46w=
+github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200414141612-76e514f357d4 h1:MZ3ioIb/U6etrS6anndfL0jYIQD6BcMLxv8qcq39U0g=
+github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200414141612-76e514f357d4/go.mod h1:dR5GOFs7tjVFc95sYSED+F/ccbm6WUBvzb+Atpca46w=
 github.com/gorilla/handlers v1.4.2 h1:0QniY0USkHQ1RGCLfKxeNHK9bkDHGRYGNDFBCS+YARg=
 github.com/gorilla/handlers v1.4.2/go.mod h1:Qkdc/uu4tH4g6mTK6auzZ766c4CA0Ng8+o/OAirnOIQ=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
