@@ -208,6 +208,10 @@ func (f Finding) ProcessImage(cli *client.Client, r registries.RegistryFinding, 
 	}
 }
 
+// GetFixableVulnCount - updates the ImageFinding.FixVersion by looping through the images vulnerabilities
+// Param: cli: *client.Client - The aqua-sdk-go client
+// Param: i: ImageFinding - The image response object
+// Return: int - The FixVersion count
 func GetFixableVulnCount(cli *client.Client, i images.ImageFinding) int {
 	var count, remaining, next int
 	var vulns imagessdk.Vulnerabilities
