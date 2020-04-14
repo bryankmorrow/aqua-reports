@@ -289,6 +289,10 @@ func GetScanHistory(cli *client.Client, registry, image, tag string) []images.Sc
 	return histories
 }
 
+// GetTemplate retrieves the final HTML to be written
+// Param: regData: string - The 'registries: []' data to be replaced
+// Param: topData: string - The 'images: []' data to be replaced
+// Return: string - the findings HTML string
 func GetTemplate(regData, topData string) string {
 	template := `
 		<!DOCTYPE html>
