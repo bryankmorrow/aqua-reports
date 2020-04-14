@@ -186,7 +186,10 @@ func GetFixableVulnCount(cli *client.Client, i images.ImageFinding) int {
 	return count
 }
 
-// MapContainerToImage
+// MapContainerToImage associates a running container with an image
+// Param: cl: containers.Containers - slice of running containers
+// Param: i: images.ImageFinding - the image to map
+// Return: bool - the value of Running
 func MapContainerToImage(cl containers.Containers, i images.ImageFinding) bool {
 	var isRunning bool
 	for _, cont := range cl.Result {
