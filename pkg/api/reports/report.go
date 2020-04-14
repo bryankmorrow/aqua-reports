@@ -77,6 +77,15 @@ func CreateImageFile(registry, image, tag string) string {
 	return "reports/" + fileName
 }
 
+func CreateFindingsFile() string {
+	fileName := "findings.html"
+	err := os.Remove("reports/" + fileName)
+	if err != nil {
+		log.Println(err)
+	}
+	return "reports/" + fileName
+}
+
 // RunningTime - Start the Timer
 func RunningTime(s string) (string, time.Time) {
 	log.Printf("Start:	%s route", s)
