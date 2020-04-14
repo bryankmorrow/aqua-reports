@@ -200,7 +200,9 @@ func MapContainerToImage(cl containers.Containers, i images.ImageFinding) bool {
 	return isRunning
 }
 
-// MapImageToRegistry
+// MapImageToRegistry associates the images to their registry
+// Param: rl: []registries.RegistryFinding - slice of Registry objects
+// Param: il: []images.ImageFinding - slice of Images
 func MapImageToRegistry(rl []registries.RegistryFinding, il []images.ImageFinding) {
 	for i, registry := range rl {
 		var total, crit, high, medium, low, sensitive, malware int
