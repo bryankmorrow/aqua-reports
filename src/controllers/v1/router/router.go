@@ -1,7 +1,9 @@
 package router
 
 import (
+	FindingHanlder "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/findings"
 	ImageHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/images"
+	RegistriesHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/registries"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
 	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
@@ -36,6 +38,8 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 			Routes: routes.Routes{
 				routes.Route{Name: "ImageReport", Method: "GET", Pattern: "/reports/scans/{image:.*}", HandlerFunc: ImageHandler.ImageHandler},
 				routes.Route{Name: "AllImagesReport", Method: "GET", Pattern: "/reports/scans", HandlerFunc: ImageHandler.ImagesHandler},
+				routes.Route{Name: "Registries", Method: "GET", Pattern: "/reports/registries", HandlerFunc: RegistriesHandler.RegistriesHandler},
+				routes.Route{Name: "Findings", Method: "GET", Pattern: "/reports/findings", HandlerFunc: FindingHanlder.FindingHandler},
 			},
 			Middleware: Middleware,
 		},
