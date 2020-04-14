@@ -11,10 +11,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Images sets a slice of images
 type Images []Image
 
-// ImagesHandler needs to handle the incoming request and execute the proper Image call
-func ImagesHandler(w http.ResponseWriter, r *http.Request) {
+// AllHandler needs to handle the incoming request and execute the proper Image call
+func AllHandler(w http.ResponseWriter, r *http.Request) {
 	var images Images
 	params := mux.Vars(r)
 	queue := make(chan reports.Response)
@@ -44,7 +45,7 @@ func (il *Images) Get(params map[string]string, queue chan reports.Response) rep
 		go image.Get(p, queue)
 	}
 	queueCount := 1
-	for _ = range queue {
+	for range queue {
 		if queueCount == total {
 			close(queue)
 		}

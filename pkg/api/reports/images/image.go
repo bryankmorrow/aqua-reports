@@ -25,10 +25,10 @@ type Image struct {
 	Response        reports.Response       `json:"response"`
 }
 
-// ImageHandler needs to handle the incoming request and execute the proper Image call
+// Handler needs to handle the incoming request and execute the proper Image call
 // Param: http.ResponseWriter - writer to send back to requester
 // Param: *http.Request - request
-func ImageHandler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	var image Image
 	// Get the registry, image and tag from the path parameters
 	p := mux.Vars(r)
