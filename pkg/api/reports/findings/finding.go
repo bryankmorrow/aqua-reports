@@ -41,11 +41,11 @@ func FindingHandler(w http.ResponseWriter, r *http.Request) {
 func (f *Finding) Get(params map[string]string, queue chan reports.Response) reports.Response {
 	defer reports.Track(reports.RunningTime("findings.Get"))
 	var registryList []registries.RegistryFinding
+	var imageList []images.ImageFinding
 	// Connect to the Client
 	cli := reports.GetClient(f)
 	// Get Registries
 	rl := cli.GetRegistries()
-	cl, _, _, _ := cli.GetContainers(0, 1000, nil)
 	for _, reg := range rl {
 		var r registries.RegistryFinding
 		r.Name = reg.Name
@@ -56,83 +56,40 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 		r.Type = reg.Type
 		r.Lastupdate = reg.Lastupdate
 		r.Username = reg.Username
-		params := make(map[string]string)
-		params["registry"] = reg.Name
-		params["fix_availability"] = "true"
-		il, _, _, _ := cli.GetAllImages(0, 1000, params, nil)
-		r.ImageCount = il.Count
-		var imageList []images.ImageFinding
-		q := make(chan images.ImageFinding)
-		for _, i := range il.Result {
-			go f.ProcessImage(cli, r, i, q, cl)
-		}
-		queueCount := 1
-		for img := range q {
-			imageList = append(imageList, img)
-			if queueCount == il.Count {
-				close(q)
-			}
-			queueCount++
-		}
-		r.Images = imageList
 		registryList = append(registryList, r)
 	}
-	// Get the top 10 images by vulnerability count
-	var top []images.ImageFinding
-	il, _, _, _ := cli.GetAllImages(0, 1000, nil, nil)
+	// Get Running Containers
+	cl, _, _, _ := cli.GetContainers(0, 1000, nil)
+	// Get All Images and Scan History
+	p := make(map[string]string)
+	p["fix_availability"] = "true"
+	il, _, _, _ := cli.GetAllImages(0, 1000, p, nil)
+	q := make(chan images.ImageFinding)
 	for _, i := range il.Result {
-		var img images.ImageFinding
-		img.Registry = i.Registry
-		img.Name = i.Name
-		img.VulnsFound = i.VulnsFound
-		img.CritVulns = i.CritVulns
-		img.HighVulns = i.HighVulns
-		img.MedVulns = i.MedVulns
-		img.LowVulns = i.LowVulns
-		img.NegVulns = i.NegVulns
-		img.FixableVulns = 0
-		img.Repository = i.Repository
-		img.Tag = i.Tag
-		img.Created = i.Created
-		img.Author = i.Author
-		img.Digest = i.Digest
-		img.Size = i.Size
-		img.Os = i.Os
-		img.OsVersion = i.OsVersion
-		img.ScanStatus = i.ScanStatus
-		img.ScanDate = i.ScanDate
-		img.ScanError = i.ScanError
-		img.SensitiveData = i.SensitiveData
-		img.Malware = i.Malware
-		img.Disallowed = i.Disallowed
-		img.Whitelisted = i.Whitelisted
-		img.Blacklisted = i.Blacklisted
-		img.PartialResults = i.PartialResults
-		img.NewerImageExists = i.NewerImageExists
-		img.PendingDisallowed = i.PendingDisallowed
-		img.MicroenforcerDetected = i.MicroenforcerDetected
-		img.FixableVulns = GetFixableVulnCount(cli, img)
-		img.Running = MapContainerToImage(cl, img)
-		hl := GetScanHistory(cli, img.Registry, img.Repository, img.Tag)
-		// Sort the scan history
-		sort.Slice(hl, func(i, j int) bool {
-			return hl[i].Date.Before(hl[j].Date)
-		})
-		img.ScanHistory = hl
-		top = append(top, img)
+		go f.ProcessImage(cli, i, q, cl)
 	}
-	//Sort Top
-	sort.Slice(top, func(i, j int) bool {
-		if top[i].VulnsFound > top[j].VulnsFound {
+	queueCount := 1
+	for img := range q {
+		imageList = append(imageList, img)
+		if queueCount == il.Count {
+			close(q)
+		}
+		queueCount++
+	}
+	// Map Images to Registry
+	MapImageToRegistry(registryList, imageList)
+	// Get the top 10 images by vulnerability count
+	sort.Slice(imageList, func(i, j int) bool {
+		if imageList[i].VulnsFound > imageList[j].VulnsFound {
 			return true
 		}
-		if top[i].VulnsFound < top[j].VulnsFound {
+		if imageList[i].VulnsFound < imageList[j].VulnsFound {
 			return false
 		}
-		return top[i].Name < top[j].Name
+		return imageList[i].Name < imageList[j].Name
 	})
 	registryData, _ := json.Marshal(registryList)
-	topImages, _ := json.Marshal(top[:10])
+	topImages, _ := json.Marshal(imageList[:10])
 	template := GetTemplate(string(registryData), string(topImages))
 	fileName := reports.CreateFindingsFile()
 	w, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
@@ -153,18 +110,10 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 
 // ProcessImage creates an ImageFinding object and sends it to the channel
 // Param: cli: *client.Client - The client from aqua-sdk-go
-// Param: r: RegistryFinding - The current registry
 // Param: i: SingleResponse - The image response object from the client
 // Param: q: chan ImageFinding - The queue that receives the ImageFinding object
 // Param: cl: Containers - This slice of containers to map is_running
-func (f Finding) ProcessImage(cli *client.Client, r registries.RegistryFinding, i imagessdk.SingleResponse, q chan images.ImageFinding, cl containers.Containers) {
-	r.CritVulns = r.CritVulns + i.CritVulns
-	r.HighVulns = r.HighVulns + i.HighVulns
-	r.MedVulns = r.MedVulns + i.MedVulns
-	r.LowVulns = r.LowVulns + i.LowVulns
-	r.TotalVulns = r.TotalVulns + i.VulnsFound
-	r.SensitiveData = r.SensitiveData + r.SensitiveData
-	r.Malware = r.Malware + r.Malware
+func (f Finding) ProcessImage(cli *client.Client, i imagessdk.SingleResponse, q chan images.ImageFinding, cl containers.Containers) {
 	var img images.ImageFinding
 	img.Registry = i.Registry
 	img.Name = i.Name
@@ -237,6 +186,7 @@ func GetFixableVulnCount(cli *client.Client, i images.ImageFinding) int {
 	return count
 }
 
+// MapContainerToImage
 func MapContainerToImage(cl containers.Containers, i images.ImageFinding) bool {
 	var isRunning bool
 	for _, cont := range cl.Result {
@@ -245,6 +195,35 @@ func MapContainerToImage(cl containers.Containers, i images.ImageFinding) bool {
 		}
 	}
 	return isRunning
+}
+
+// MapImageToRegistry
+func MapImageToRegistry(rl []registries.RegistryFinding, il []images.ImageFinding) {
+	for i, registry := range rl {
+		var total, crit, high, medium, low, sensitive, malware int
+		var imageList []images.ImageFinding
+		for _, image := range il {
+			if registry.Name == image.Registry {
+				imageList = append(imageList, image)
+				total = total + image.VulnsFound
+				crit = crit + image.CritVulns
+				high = high + image.HighVulns
+				medium = medium + image.MedVulns
+				low = low + image.LowVulns
+				sensitive = sensitive + image.SensitiveData
+				malware = malware + image.Malware
+			}
+		}
+		rl[i].TotalVulns = total
+		rl[i].CritVulns = crit
+		rl[i].HighVulns = high
+		rl[i].MedVulns = medium
+		rl[i].LowVulns = low
+		rl[i].SensitiveData = sensitive
+		rl[i].Malware = malware
+		rl[i].ImageCount = len(imageList)
+		rl[i].Images = imageList
+	}
 }
 
 // GetScanHistory calls the aqua-sdk-go GetScanHistory call
