@@ -44,9 +44,7 @@ func (il *Images) Get(params map[string]string, queue chan reports.Response) rep
 		go image.Get(p, queue)
 	}
 	queueCount := 1
-	for resp := range queue {
-		log.Printf("Count: %d  Total: %d \n", queueCount, total)
-		log.Println(resp)
+	for _ = range queue {
 		if queueCount == total {
 			close(queue)
 		}

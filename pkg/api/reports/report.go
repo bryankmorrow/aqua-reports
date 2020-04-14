@@ -58,7 +58,7 @@ func UnescapeURLQuery(params map[string]string) {
 	for k, v := range params {
 		value, err := url.QueryUnescape(v)
 		if err != nil {
-			log.Println("error while Unescaping Query Parameter: ", err)
+			log.Println("error while Un-escaping Query Parameter: ", err)
 			return
 		}
 		params[k] = value
@@ -73,8 +73,6 @@ func CreateImageFile(registry, image, tag string) string {
 	err := os.Remove("reports/" + fileName)
 	if err != nil {
 		log.Println(err)
-	} else {
-		log.Printf("Previous report for image: %s deleted successfully \n", image)
 	}
 	return "reports/" + fileName
 }
