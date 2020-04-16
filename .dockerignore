@@ -10,3 +10,4 @@ README.md
 .dockerignore
 .travis.yml
 .idea/
+/reports

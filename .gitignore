@@ -6,3 +6,4 @@ helm/
 aqua-reports
 .idea/
 *.html
+app.yaml
