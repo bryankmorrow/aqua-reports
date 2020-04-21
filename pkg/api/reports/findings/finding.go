@@ -21,10 +21,10 @@ import (
 
 type Finding findings.Finding
 
-// FindingHandler needs to handle the incoming request and execute the finding report generation
+// Handler needs to handle the incoming request and execute the finding report generation
 // Param: http.ResponseWriter - writer to send back to requester
 // Param: *http.Request - request
-func FindingHandler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	var finding Finding
 	params := make(map[string]string)
 	params["path"] = r.Host
