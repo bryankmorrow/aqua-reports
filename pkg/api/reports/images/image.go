@@ -10,14 +10,13 @@ import (
 	"strings"
 
 	"github.com/BryanKMorrow/aqua-reports/pkg/api/reports"
-	"github.com/gorilla/mux"
-
 	"github.com/BryanKMorrow/aqua-sdk-go/types/images"
+	"github.com/gorilla/mux"
 )
 
 // Image contains the structure for a single image report
 type Image struct {
-	Risk            images.SingleResponse  `json:"risk"`
+	Risk            images.Image           `json:"risk"`
 	Vulnerabilities images.Vulnerabilities `json:"vulnerabilities"`
 	SensitiveData   images.Sensitive       `json:"sensitive_data"`
 	Malware         images.Malware         `json:"malware"`
@@ -65,8 +64,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func (i *Image) Get(params map[string]string, queue chan reports.Response) reports.Response {
 	defer reports.Track(reports.RunningTime("image.Get"))
 	var err error
-	//var remaining, total, next int
-
 	// Get the request query parameters and unescape them
 	reports.UnescapeURLQuery(params)
 	// Get the client

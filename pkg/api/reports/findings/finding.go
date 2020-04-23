@@ -113,7 +113,7 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 // Param: i: SingleResponse - The image response object from the client
 // Param: q: chan ImageFinding - The queue that receives the ImageFinding object
 // Param: cl: Containers - This slice of containers to map is_running
-func (f Finding) ProcessImage(cli *client.Client, i imagessdk.SingleResponse, q chan images.ImageFinding, cl containers.Containers) {
+func (f Finding) ProcessImage(cli *client.Client, i imagessdk.Image, q chan images.ImageFinding, cl containers.Containers) {
 	var img images.ImageFinding
 	img.Registry = i.Registry
 	img.Name = i.Name
@@ -144,8 +144,8 @@ func (f Finding) ProcessImage(cli *client.Client, i imagessdk.SingleResponse, q 
 	img.NewerImageExists = i.NewerImageExists
 	img.PendingDisallowed = i.PendingDisallowed
 	img.MicroenforcerDetected = i.MicroenforcerDetected
-	img.FixableVulns = GetFixableVulnCount(cli, img)
 	img.Running = MapContainerToImage(cl, img)
+	img.FixableVulns = GetFixableVulnCount(cli, img)
 	hl := GetScanHistory(cli, img.Registry, img.Repository, img.Tag)
 	// Sort the scan history
 	sort.Slice(hl, func(i, j int) bool {
@@ -167,14 +167,14 @@ func GetFixableVulnCount(cli *client.Client, i images.ImageFinding) int {
 	params := make(map[string]string)
 	params["show_negligible"] = "true"
 	params["hide_base_image"] = "false"
-	vulns, remaining, _, next = cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, 0, 1000, params, nil)
+	vulns, remaining, next, _ = cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, 0, 1000, params, nil)
 	for _, vuln := range vulns.Result {
 		if vuln.FixVersion != "" {
 			count++
 		}
 	}
 	for remaining > 0 {
-		vulns, r, _, n := cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, next, 1000, params, nil)
+		vulns, r, n, _ := cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, next, 1000, params, nil)
 		for _, vuln := range vulns.Result {
 			if vuln.FixVersion != "" {
 				count++

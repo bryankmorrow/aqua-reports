@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// ImageFinding stores the findings report images: [] data
 type ImageFinding struct {
 	Registry              string               `json:"registry"`
 	Name                  string               `json:"name"`
