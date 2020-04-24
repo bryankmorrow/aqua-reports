@@ -4,21 +4,23 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/BryanKMorrow/aqua-reports/pkg/types/findings"
-	"github.com/BryanKMorrow/aqua-reports/pkg/types/images"
-	"github.com/BryanKMorrow/aqua-reports/pkg/types/registries"
-	"github.com/BryanKMorrow/aqua-sdk-go/client"
-	"github.com/BryanKMorrow/aqua-sdk-go/types/containers"
-	imagessdk "github.com/BryanKMorrow/aqua-sdk-go/types/images"
 	"log"
 	"net/http"
 	"os"
 	"sort"
 	"strings"
 
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/findings"
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/images"
+	"github.com/BryanKMorrow/aqua-reports/pkg/types/registries"
+	"github.com/BryanKMorrow/aqua-sdk-go/client"
+	"github.com/BryanKMorrow/aqua-sdk-go/types/containers"
+	imagessdk "github.com/BryanKMorrow/aqua-sdk-go/types/images"
+
 	"github.com/BryanKMorrow/aqua-reports/pkg/api/reports"
 )
 
+// Finding stores the entire report
 type Finding findings.Finding
 
 // Handler needs to handle the incoming request and execute the finding report generation
