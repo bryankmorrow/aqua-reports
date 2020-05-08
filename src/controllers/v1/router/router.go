@@ -6,6 +6,7 @@ import (
 	FindingHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/findings"
 	ImageHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/images"
 	RegistriesHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/registries"
+	VulnerabilityHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/vulnerabilities"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
 	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
@@ -42,6 +43,7 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 				routes.Route{Name: "Registries", Method: "GET", Pattern: "/reports/registries", HandlerFunc: RegistriesHandler.RegistriesHandler},
 				routes.Route{Name: "Findings", Method: "GET", Pattern: "/reports/findings", HandlerFunc: FindingHandler.Handler},
 				routes.Route{Name: "TagHistory", Method: "GET", Pattern: "/reports/repos/taghistory", HandlerFunc: FindingHandler.TagHandler},
+				routes.Route{Name: "TopVulnerabilities", Method: "GET", Pattern: "/reports/vulnerabilities", HandlerFunc: VulnerabilityHandler.Handler},
 			},
 			Middleware: Middleware,
 		},

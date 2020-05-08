@@ -1,7 +1,5 @@
-github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200423143413-6c70a73a0e6a h1:eQH8EeURgf9IXJCdmsWQBmmlro7GA8qxnMjDbxI6zOQ=
-github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200423143413-6c70a73a0e6a/go.mod h1:dR5GOFs7tjVFc95sYSED+F/ccbm6WUBvzb+Atpca46w=
-github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200423150924-2fc51174ae72 h1:Hp2bWFILd9+nK+KcPNZ8xltamV5sfMtoUn6zU4Lzyhg=
-github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200423150924-2fc51174ae72/go.mod h1:dR5GOFs7tjVFc95sYSED+F/ccbm6WUBvzb+Atpca46w=
+github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200508203739-9d1857cb20b3 h1:ssDN498Fhdyc5G4biTwKlWW0wt2oSdWRhpujVrTyJ4Y=
+github.com/BryanKMorrow/aqua-sdk-go v0.0.0-20200508203739-9d1857cb20b3/go.mod h1:dR5GOFs7tjVFc95sYSED+F/ccbm6WUBvzb+Atpca46w=
 github.com/elazarl/goproxy v0.0.0-20200421181703-e76ad31c14f6 h1:GhNw/V+7mWhxPyD/n7STfwp/MJJ+Z/sa6wmzYXr96Ls=
 github.com/elazarl/goproxy v0.0.0-20200421181703-e76ad31c14f6/go.mod h1:Ro8st/ElPeALwNFlcTpWmkr6IoMFfkjXAvTHpevnDsM=
 github.com/elazarl/goproxy/ext v0.0.0-20190711103511-473e67f1d7d2 h1:dWB6v3RcOy03t/bUadywsbyrQwCqZeNIEX6M1OtSZOM=
@@ -12,6 +10,8 @@ github.com/gorilla/handlers v1.4.2 h1:0QniY0USkHQ1RGCLfKxeNHK9bkDHGRYGNDFBCS+YAR
 github.com/gorilla/handlers v1.4.2/go.mod h1:Qkdc/uu4tH4g6mTK6auzZ766c4CA0Ng8+o/OAirnOIQ=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
 github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
+github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
+github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/parnurzeal/gorequest v0.2.16 h1:T/5x+/4BT+nj+3eSknXmCTnEVGSzFzPGdpqmUVVZXHQ=
