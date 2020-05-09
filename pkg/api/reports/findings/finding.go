@@ -91,7 +91,7 @@ func (f *Finding) Get(params map[string]string, queue chan reports.Response) rep
 	registryData, _ := json.Marshal(registryList)
 	topImages, _ := json.Marshal(imageList[:10])
 	template := GetTemplate(string(registryData), string(topImages))
-	fileName := reports.CreateFindingsFile()
+	fileName := reports.CreateFindingsFile("findings")
 	w, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)

@@ -77,8 +77,8 @@ func CreateImageFile(registry, image, tag string) string {
 	return "reports/" + fileName
 }
 
-func CreateFindingsFile() string {
-	fileName := "findings.html"
+func CreateFindingsFile(name string) string {
+	fileName := name + ".html"
 	err := os.Remove("reports/" + fileName)
 	if err != nil {
 		log.Println(err)
