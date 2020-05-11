@@ -38,7 +38,8 @@ type ImageFinding struct {
 	PendingDisallowed     bool                 `json:"pending_disallowed"`
 	MicroenforcerDetected bool                 `json:"microenforcer_detected"`
 	Running               bool                 `json:"is_running"`
-	ScanHistory           []ScanHistoryFinding `json:"scan_history"`
+	ScanHistory           []ScanHistoryFinding `json:"scan_history,omitempty"`
+	Vulnerabilities       []string             `json:"vulnerabilities,omitempty"`
 }
 
 type ScanHistoryFinding struct {
@@ -64,4 +65,7 @@ type ScanHistoryFinding struct {
 	Malware              int       `json:"malware"`
 	Disallowed           bool      `json:"disallowed"`
 	PartialResults       bool      `json:"partial_results"`
+}
+
+type ImageFindingVulnerability struct {
 }

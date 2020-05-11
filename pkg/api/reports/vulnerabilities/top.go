@@ -9,7 +9,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/BryanKMorrow/aqua-sdk-go/client"
+
 	"github.com/BryanKMorrow/aqua-reports/pkg/api/reports"
+	reportImages "github.com/BryanKMorrow/aqua-reports/pkg/types/images"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/vulnerabilities"
 	"github.com/BryanKMorrow/aqua-sdk-go/types/images"
 )
@@ -40,23 +43,22 @@ func (v *VulnFinding) Get(params map[string]string, queue chan reports.Response)
 	// Connect to the Client
 	cli := reports.GetClient(v)
 	// Get All Vulnerabilities
-	detail, remaining, next, total := cli.GetRiskVulnerabilities(1, 1000, nil)
-	log.Printf("Vulnerabilities Remaining: %d  Next: %d  Total: %d", remaining, next, total)
+	detail, remaining, next, _ := cli.GetRiskVulnerabilities(1, 1000, nil)
 	vl = append(vl, detail.Result...)
 	for remaining > 0 {
-		detail, remaining, next, total = cli.GetRiskVulnerabilities(next, 1000, nil)
-		log.Printf("Vulnerabilities Remaining: %d  Next: %d  Total: %d", remaining, next, total)
+		detail, remaining, next, _ = cli.GetRiskVulnerabilities(next, 1000, nil)
 		vl = append(vl, detail.Result...)
 	}
 	// Get All Images
-	images, remaining, next, total := cli.GetAllImages(0, 1000, nil, nil)
-	log.Printf("Images Remaining: %d  Next: %d  Total: %d", remaining, next, total)
+	images, remaining, next, _ := cli.GetAllImages(1, 1000, nil, nil)
 	il = append(il, images.Result...)
 	for remaining > 0 {
-		images, remaining, next, total = cli.GetAllImages(0, 1000, nil, nil)
-		log.Printf("Images Remaining: %d  Next: %d  Total: %d", remaining, next, total)
+		images, remaining, next, _ = cli.GetAllImages(next, 1000, nil, nil)
 		il = append(il, images.Result...)
 	}
+	// Loop through each Image and get vulnerabilities
+	ifl := ConvertImageToFinding(cli, il)
+
 	// Loop through each vulnerability and map images to Vuln
 	vulns := []vulnerabilities.Vulnerability{}
 	for _, v := range vl {
@@ -65,13 +67,13 @@ func (v *VulnFinding) Get(params map[string]string, queue chan reports.Response)
 		if !found {
 			vuln.Name = v.Name
 			vuln.Vulnerability = v
-			ok, img := MapVulnerabilityToImage(vuln, il)
+			ok, img := MapImageToVulnerability(vuln, ifl)
 			if ok {
 				vuln.Images = append(vuln.Images, img)
 				vulns = append(vulns, vuln)
 			}
 		} else {
-			ok, img := MapVulnerabilityToImage(vulns[i], il)
+			ok, img := MapImageToVulnerability(vulns[i], ifl)
 			if ok {
 				vulns[i].Images = append(vulns[i].Images, img)
 			}
@@ -108,13 +110,56 @@ func (v *VulnFinding) Get(params map[string]string, queue chan reports.Response)
 	return response
 }
 
-func MapVulnerabilityToImage(v vulnerabilities.Vulnerability, il []images.Image) (bool, images.Image) {
-	for _, image := range il {
-		if (v.Vulnerability.ImageName == image.Name) && (v.Vulnerability.Registry == image.Registry) {
-			return true, image
+func ConvertImageToFinding(cli *client.Client, il []images.Image) []reportImages.ImageFinding {
+	var ifl []reportImages.ImageFinding
+	for _, i := range il {
+		var vil []images.Vulnerability
+		var vfi []string
+		vuln, remaining, next, _ := cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, 0, 1000, nil, nil)
+		vil = append(vil, vuln.Result...)
+		for remaining > 0 {
+			vuln, remaining, _, _ = cli.GetVulnerabilities(i.Registry, i.Repository, i.Tag, next, 1000, nil, nil)
+			vil = append(vil, vuln.Result...)
+		}
+		for _, v := range vil {
+			vfi = append(vfi, v.Name)
+		}
+		ivf := reportImages.ImageFinding{
+			Registry:        i.Registry,
+			Name:            i.Name,
+			VulnsFound:      i.VulnsFound,
+			CritVulns:       i.CritVulns,
+			HighVulns:       i.HighVulns,
+			MedVulns:        i.MedVulns,
+			LowVulns:        i.LowVulns,
+			NegVulns:        i.NegVulns,
+			RegistryType:    i.RegistryType,
+			Repository:      i.Repository,
+			Tag:             i.Tag,
+			Created:         i.Created,
+			ScanDate:        i.ScanDate,
+			SensitiveData:   i.SensitiveData,
+			Malware:         i.Malware,
+			Disallowed:      i.Disallowed,
+			Vulnerabilities: vfi,
+		}
+		ifl = append(ifl, ivf)
+	}
+	return ifl
+}
+
+func MapImageToVulnerability(v vulnerabilities.Vulnerability, ivl []reportImages.ImageFinding) (bool, reportImages.ImageFinding) {
+	for _, iv := range ivl {
+		for _, vuln := range iv.Vulnerabilities {
+			if v.Name == vuln {
+				_, found := FindImageInVuln(v.Images, iv.Name)
+				if !found {
+					return true, iv
+				}
+			}
 		}
 	}
-	return false, images.Image{}
+	return false, reportImages.ImageFinding{}
 }
 
 func UpdateImageCounts(vulns []vulnerabilities.Vulnerability) []vulnerabilities.Vulnerability {
@@ -130,6 +175,15 @@ func Find(vulns []vulnerabilities.Vulnerability, name string) (int, bool) {
 	for i, vuln := range vulns {
 		if vuln.Name == name {
 			return i, true
+		}
+	}
+	return -1, false
+}
+
+func FindImageInVuln(ivf []reportImages.ImageFinding, name string) (int, bool) {
+	for index, i := range ivf {
+		if i.Name == name {
+			return index, true
 		}
 	}
 	return -1, false
@@ -204,19 +258,50 @@ func GetTemplate(topData string) string {
                 <span v-else-if="vuln.vulnerability.aqua_severity == 'high'" class="badge badge-danger">{{ vuln.vulnerability.aqua_severity }}</span>
                 <span v-else-if="vuln.vulnerability.aqua_severity == 'negligible'" class="badge badge-primary">{{ vuln.vulnerability.aqua_severity }}</span>
             </td>
-            <td style="color: #000;">{{vuln.vulnerability.aqua_score}}</td>
-            <td style="color: #000;text-align:left;width:150px;max-width:200px;">{{vuln.vulnerability.publish_date}}</td>
-            <td style="color: #000;text-align:left;width:150px;max-width:200px;">{{vuln.vulnerability.modification_date}}</td>
-            <td style="color: #000;">{{vuln.vulnerability.resource.type}}</td>
-            <td style="color: #000;text-align:left;width:150px;max-width:350px;"><span v-if="vuln.vulnerability.resource.type == 'package'">{{vuln.vulnerability.resource.name}}</span>
+            <td style="color: #000;text-align:left;">  {{vuln.vulnerability.aqua_score}}</td>
+            <td style="color: #000;width:100px;max-width:150px;">{{vuln.vulnerability.publish_date}}</td>
+            <td style="color: #000;width:100px;max-width:150px;">{{vuln.vulnerability.modification_date}}</td>
+            <td style="color: #000;width:100px;">{{vuln.vulnerability.resource.type}}</td>
+            <td style="color: #000;width:150px;max-width:350px;"><span v-if="vuln.vulnerability.resource.type == 'package'">{{vuln.vulnerability.resource.name}}</span>
                 <span v-else>{{getPath(index)}} {{fileName}}</span>
             </td>
-            <td style="color: #000;text-align:left;width:150px;max-width:350px;">{{vuln.vulnerability.resource.version}}</td>
+            <td style="color: #000;width:150px;max-width:350px;">{{vuln.vulnerability.resource.version}}</td>
         </tr>
         </tbody>
         </table>
         </div>
         </div>
+
+		<div class="row">
+                <div class="col-12">
+
+                    <h3>{{current_vuln}} Vulnerable Images</h3>
+                    <table style="margin-top: 15px;width: 100%">
+                        <thead>
+                        <th @click="sort('vuln_finding.images', 'name', $event)" style="text-align: left;">Name</th>
+                        <th @click="sort('vuln_finding.images','registry')" style="text-align: left;"><a href="#">Registry</a></th>
+                        <th @click="sort('vuln_finding.images','vulns_found')"><a href="#">Total Vulns</a></th>
+                        <th @click="sort('vuln_finding.images','crit_vulns')"><a href="#">Critical</a></th>
+                        <th @click="sort('vuln_finding.images','high_vulns')"><a href="#">High</a></th>
+                        <th @click="sort('vuln_finding.images','med_vulns')"><a href="#">Medium</a></th>
+                        <th @click="sort('vuln_finding.images','malware')"><a href="#">Malware</a></th>
+                        <th @click="sort('vuln_finding.images','sensitive_data')"><a href="#">Sensitive</a></th>
+                        </thead>
+                        <tr v-for="(image, index) in vuln_finding[activeVuln].images" :key="index">
+                            <td class="truncate" style="max-width: 350px;">{{ image.name }}</td>
+                            <td style="color: #000; text-align: left;">{{image.registry}}</td>
+                            <td><span class="badge badge-primary">{{image.vulns_found}}</span></td>
+                            <td><span class="badge badge-dark">{{ image.crit_vulns }}</span></td>
+                            <td><span class="badge badge-danger">{{ image.high_vulns }}</span></td>
+                            <td><span class="badge badge-warning">{{ image.med_vulns }}</span></td>
+                            <td><span class="badge badge-light">{{ image.malware }}</span></td>
+                            <td><span class="badge badge-light">{{ image.sensitive_data }}</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div><!-- end col-md-12 -->
+            </div><!-- end row -->
             
         </div><!-- end app -->
 
@@ -231,7 +316,6 @@ func GetTemplate(topData string) string {
         		el: '#app',
         		data: { 
 					vuln_finding: [],
-                    activeIndex: 0,
                     activeVuln: 0,
                     pageLoad: false,
 					fileName: "",
@@ -247,10 +331,11 @@ func GetTemplate(topData string) string {
         		    vuln_images(index){
         		        this.pageLoad = false;
         		        this.activeVuln = index;
+                        this.activeImage = this.vuln_finding[index].images[0];
 
                     },
                     sort(collection, column, event){
-                      if(column == 'name' || column == 'publish_date' || column == 'severity'){
+                      if(column == 'name' || column == 'vulns_found' || column == 'severity'){
                           this[collection].sort((a, b) => a[column].localeCompare(b[column]))
                       }else{
                           this[collection].sort((a, b) => b[column] - a[column]);
@@ -259,16 +344,15 @@ func GetTemplate(topData string) string {
                     getPath: function(index){
                         str = this.vuln_finding[index].vulnerability.resource.path.split("/")
                         this.fileName = str[str.length -1]
-                        console.log(this.fileName)
                     },
                 },
                 computed:{
-        		    current_vuln: function(){
-                          if(this.pageLoad){
-                              return "Overall"
-                          }else {
-                              return this.vuln_finding[this.activeVuln].name
-                          }
+                    current_vuln: function(){
+                        if(this.pageLoad){
+                            return this.vuln_finding[0].name
+                        }else {
+                            return this.vuln_finding[this.activeVuln].name
+                        }
                     },
                 },
                 filters: {
