@@ -1,25 +1,20 @@
 package router
 
 import (
-	"log"
 	"net/http"
 
+	FindingHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/findings"
+	ImageHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/images"
+	RegistriesHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/registries"
+	VulnerabilityHandler "github.com/BryanKMorrow/aqua-reports/pkg/api/reports/vulnerabilities"
 	"github.com/BryanKMorrow/aqua-reports/pkg/types/routes"
 	ReportsHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/reports"
 	StatusHandler "github.com/BryanKMorrow/aqua-reports/src/controllers/v1/status"
 )
 
-// Middleware - Handler to check for authentication
+// Middleware - Handler
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		/* token := r.Header.Get("X-App-Token")
-		if len(token) < 1 {
-			http.Error(w, "Not authorized", http.StatusUnauthorized)
-			return
-		} */
-
-		log.Println("Inside V1 Middleware")
-
 		next.ServeHTTP(w, r)
 	})
 }
@@ -38,6 +33,17 @@ func GetRoutes() (SubRoute map[string]routes.SubRoutePackage) {
 				routes.Route{Name: "Report", Method: "GET", Pattern: "/reports/{registry}/{image}/{tag}", HandlerFunc: ReportsHandler.One},
 				routes.Route{Name: "Reports", Method: "POST", Pattern: "/reports/images", HandlerFunc: ReportsHandler.Post},
 				routes.Route{Name: "ExecutiveOverview", Method: "GET", Pattern: "/reports/overview", HandlerFunc: ReportsHandler.Overview},
+			},
+			Middleware: Middleware,
+		},
+		"/api/v2": {
+			Routes: routes.Routes{
+				routes.Route{Name: "ImageReport", Method: "GET", Pattern: "/reports/scans/{image:.*}", HandlerFunc: ImageHandler.Handler},
+				routes.Route{Name: "AllImagesReport", Method: "GET", Pattern: "/reports/scans", HandlerFunc: ImageHandler.AllHandler},
+				routes.Route{Name: "Registries", Method: "GET", Pattern: "/reports/registries", HandlerFunc: RegistriesHandler.RegistriesHandler},
+				routes.Route{Name: "Findings", Method: "GET", Pattern: "/reports/findings", HandlerFunc: FindingHandler.Handler},
+				routes.Route{Name: "TagHistory", Method: "GET", Pattern: "/reports/repos/taghistory", HandlerFunc: FindingHandler.TagHandler},
+				routes.Route{Name: "TopVulnerabilities", Method: "GET", Pattern: "/reports/vulnerabilities", HandlerFunc: VulnerabilityHandler.Handler},
 			},
 			Middleware: Middleware,
 		},

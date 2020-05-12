@@ -52,6 +52,6 @@ func (r *Router) AttachSubRouterWithMiddleware(path string, subroutes routes.Rou
 
 // NewRouter - return the router
 func NewRouter() (r Router) {
-	r.Router = mux.NewRouter().StrictSlash(true)
+	r.Router = mux.NewRouter().StrictSlash(true).UseEncodedPath()
 	return
 }
