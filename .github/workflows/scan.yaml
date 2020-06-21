@@ -14,5 +14,8 @@ jobs:
       - name: Get base image if Dockerfile exists
         run: |
           if [ -f Dockerfile ]; then
-            BASE_IMAGE=$(head -1 Dockerfile-protected | awk '{split($0,a," "); print a[2]}')
+            BASE_IMAGE=$(head -1 Dockerfile | awk '{split($0,a," "); print a[2]}')
             echo $BASE_IMAGE
+          else
+            echo No Dockerfile found
+          fi
